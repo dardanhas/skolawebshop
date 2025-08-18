@@ -1,16 +1,17 @@
 /* ===== Data ===== */
 const fmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' });
 
+/* Din nya produktlista (9 st) */
 const PRODUCTS = [
- { id: 'p1',  name: 'MHoodie', price: 499,  img: 'images/hoodie.jpg' },
-  { id: 'p2',  name: 'Basic Jeans',    price: 899,  img: 'images/jeans.jpg' },
-  { id: 'p3',  name: 'Vit T-shirt',     price: 299,  img: 'images/tshirt.jpg' },
-  { id: 'p4',  name: 'Svart T-shirt',      price: 2499, img: 'images/svarttshirt.jpg' },
-  { id: 'p5',  name: 'Vinterjacka',      price: 3499, img: 'images/vinterjacka.jpg' },
-  { id: 'p6',  name: 'Sneakers',        price: 1299, img: 'images/sneakers.jpg' },
-  { id: 'p7',  name: 'Tröja',   price: 699,  img: 'images/tröja.jpg' },
-  { id: 'p8',  name: 'Keps',    price: 299, img: 'images/keps.jpg' },
-  { id: 'p9', name: 'Coat',      price: 2299, img: 'images/coat.jpg' }
+  { id: 'p1', name: 'Hoodie',       price: 499,  img: 'images/hoodie.jpg',       sizes:['XS','S','M','L','XL'] },
+  { id: 'p2', name: 'Basic Jeans',   price: 899,  img: 'images/jeans.jpg',        sizes:['28','30','32','34','36'] },
+  { id: 'p3', name: 'Vit T-shirt',   price: 299,  img: 'images/tshirt.jpg',       sizes:['XS','S','M','L','XL'] },
+  { id: 'p4', name: 'Svart T-shirt', price: 299, img: 'images/svarttshirt.jpg',  sizes:['XS','S','M','L','XL'] },
+  { id: 'p5', name: 'Vinterjacka',   price: 3499, img: 'images/vinterjacka.jpg',  sizes:['XS','S','M','L'] },
+  { id: 'p6', name: 'Sneakers',      price: 1299, img: 'images/sneakers.jpg',     sizes:['39','40','41','42','43','44'] },
+  { id: 'p7', name: 'Tröja',         price: 699,  img: 'images/tröja.jpg',        sizes:['XS','S','M','L','XL'] },
+  { id: 'p8', name: 'Keps',          price: 299,  img: 'images/keps.jpg',         sizes:['One Size'] },
+  { id: 'p9', name: 'Kappa',          price: 2299, img: 'images/coat.jpg',         sizes:['XS','S','M','L'] },
 ];
 
 let cart = {};
@@ -54,7 +55,7 @@ function viewHome(){
   renderProducts();
 }
 
-/* Klickbara kort + defensiv routing */
+/* Klickbara kort + robust routing */
 function renderProducts(){
   const grid = document.getElementById('productGrid');
   if (!grid) return;
@@ -67,7 +68,7 @@ function renderProducts(){
     a.dataset.id = p.id;
     a.innerHTML = `
       <div class="media">
-        <img src="${p.img}" alt="${p.name}" loading="lazy"
+        <img src="\${encodeURI('${p.img}')}" alt="${p.name}" loading="lazy"
              onerror="this.onerror=null;this.src='images/fallback.jpg'">
       </div>
       <h3>${p.name}</h3>
@@ -75,17 +76,9 @@ function renderProducts(){
     `;
     grid.appendChild(a);
   });
-
-  /* extra: event-delegering om något skulle blockera hashchange */
-  grid.addEventListener('click', (e)=>{
-    const link = e.target.closest('a.card');
-    if (!link) return;
-    e.preventDefault();
-    navigateTo(link.getAttribute('href'));
-    router(); // rendera direkt
-  }, { once:true });
 }
 
+/* Produktdetalj */
 function viewProduct(id){
   const p = PRODUCTS.find(x=>x.id === id);
   if (!p){ navigateTo('#home'); return; }
@@ -98,7 +91,7 @@ function viewProduct(id){
 
       <div class="product-grid">
         <div class="product-gallery">
-          <img src="${p.img}" alt="${p.name}" onerror="this.onerror=null;this.src='images/fallback.jpg'">
+          <img src="\${encodeURI('${p.img}')}" alt="${p.name}" onerror="this.onerror=null;this.src='images/fallback.jpg'">
         </div>
 
         <div class="product-info">
@@ -150,6 +143,7 @@ function viewProduct(id){
   if (sort) sort.hidden = true;
 }
 
+/* Statics */
 function viewAbout(){
   app().innerHTML = `
     <section class="container fade-in">
@@ -162,7 +156,6 @@ function viewAbout(){
   `;
   const sort = document.getElementById('sortSelect'); if (sort) sort.hidden = true;
 }
-
 function viewContact(){
   app().innerHTML = `
     <section class="container fade-in">
@@ -174,7 +167,7 @@ function viewContact(){
   const sort = document.getElementById('sortSelect'); if (sort) sort.hidden = true;
 }
 
-/* ===== Sortering ===== */
+/* Sortering */
 function sortProducts(type){
   if(type === 'price-asc'){
     currentProducts.sort((a,b)=> a.price - b.price);
@@ -188,18 +181,16 @@ function sortProducts(type){
   renderProducts();
 }
 
-/* ===== Router (robust) ===== */
-function navigateTo(hash){ location.hash = hash; }
+/* ===== Router (extra robust) ===== */
+function navigateTo(hash){
+  if (location.hash === hash){ router(); }
+  else { location.hash = hash; }
+}
 
 function router(){
   const h = location.hash || '#home';
-
-  // matcha #product/ID på ett säkert sätt
   const m = h.match(/^#product\/(.+)$/);
-  if (m){
-    viewProduct(m[1]);
-    return;
-  }
+  if (m){ viewProduct(m[1]); return; }
 
   switch (h){
     case '#about':   return viewAbout();
@@ -209,16 +200,26 @@ function router(){
   }
 }
 
+/* Init */
 window.addEventListener('hashchange', router);
 window.addEventListener('DOMContentLoaded', ()=>{
   const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
   updateCartBadge();
   router();
 
+  /* Global klick-router:
+     Fångar alla #product/ID-länkar och renderar direkt (även om hashchange failar) */
+  document.addEventListener('click', (e)=>{
+    const link = e.target.closest('a[href^="#product/"]');
+    if (!link) return;
+    e.preventDefault();
+    navigateTo(link.getAttribute('href'));
+  });
+
   // "Butik" i menyn: hem + scrolla till grid
   document.body.addEventListener('click', (e)=>{
-    const link = e.target.closest('[data-link="shop"]');
-    if (link){
+    const toShop = e.target.closest('[data-link="shop"]');
+    if (toShop){
       navigateTo('#home');
       setTimeout(()=>{
         const grid = document.getElementById('productGrid');
