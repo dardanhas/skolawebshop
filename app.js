@@ -16,7 +16,7 @@ const PRODUCTS = [
   { id: "p4", name: "Svart T-shirt", price: 2499, img: "images/svarttshirt.jpg", sizes: ["XS","S","M","L","XL"] },
   { id: "p5", name: "Vinterjacka",   price: 3499, img: "images/vinterjacka.jpg", sizes: ["XS","S","M","L"] },
   { id: "p6", name: "Sneakers Adidas",      price: 1299, img: "images/sneakers.jpg",    sizes: ["39","40","41","42","43","44"] },
-  { id: "p7", name: "Tröja",         price: 699,  img: "images/tröja.jpg",       sizes: ["XS","S","M","L","XL"] },
+  { id: "p7", name: "Tröja",         price: 699,  img: "images/troja.jpg",       sizes: ["XS","S","M","L","XL"] },
   { id: "p8", name: "Keps TNF",          price: 299,  img: "images/keps.jpg",        sizes: ["One Size"] },
   { id: "p9", name: "Kappa",          price: 2299, img: "images/coat.jpg",        sizes: ["XS","S","M","L"] },
 ];
