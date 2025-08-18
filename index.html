@@ -7,7 +7,6 @@
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@700&family=Cinzel:wght@800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
-  <!-- Roboto Mono for main nav -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
@@ -33,6 +32,11 @@
 
     <!-- Actions (höger) -->
     <div class="actions">
+      <!-- Mobil: hamburgermeny (visas bara ≤640px) -->
+      <button class="nav-toggle" aria-expanded="false" aria-label="Meny">
+        <span aria-hidden="true"></span>
+      </button>
+
       <select id="sortSelect" class="select" aria-label="Sortera" hidden>
         <option value="">Sortera</option>
         <option value="price-asc">Billigast först</option>
@@ -57,7 +61,6 @@
         <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
         <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
       </div>
-      <!-- duplicate for seamless loop -->
       <div class="marquee__content" aria-hidden="true">
         <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
         <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
@@ -73,14 +76,11 @@
   <main id="app"></main>
 
   <!-- ===== FOOTER ===== -->
-<footer>
-  © <span id="year"></span> DAN25 CLOTHING
-</footer>
+  <footer>
+    © <span id="year"></span> DAN25 CLOTHING
+  </footer>
 
-<!-- Load JavaScript app -->
-<script src="./app.js" defer></script>
+  <!-- JavaScript app -->
+  <script src="./app.js" defer></script>
 </body>
 </html>
-
-
-
