@@ -209,3 +209,12 @@ footer{
 
 .fade-in{ animation:fadeIn .8s ease both; }
 @keyframes fadeIn{ from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:translateY(0)} }
+/* Make the header title ~20% smaller (applies to both words) */
+.brand-wordmark {
+  /* previously e.g. clamp(1.6rem, 3.8vw, 3.2rem) */
+  font-size: clamp(1.28rem, 3.04vw, 2.56rem); /* 80% of previous */
+  letter-spacing: .18em; /* keep spacing */
+}
+
+/* If you had a rule targeting .brand-wordmark .mark, remove it */
+
