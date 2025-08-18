@@ -7,16 +7,25 @@
 
   <!-- Typsnitt -->
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@600;700&family=Cinzel:wght@700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
-
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <!-- ===== Header ===== -->
   <header>
-    <h1 class="brand-title">MedieShoppen</h1>
+    <!-- Klickbar logga -> Hem -->
+    <a href="#home" class="brand" title="MedieShoppen – Hem">
+      <img src="images/logo.png" alt="MedieShoppen" class="brand-logo" />
+    </a>
+
+    <nav class="main-nav">
+      <a href="#home">Hem</a>
+      <a href="#home" data-link="shop">Butik</a>
+      <a href="#about">Om oss</a>
+      <a href="#contact">Kontakt</a>
+    </nav>
 
     <div class="actions">
-      <select id="sortSelect" class="select" aria-label="Sortera">
+      <select id="sortSelect" class="select" aria-label="Sortera" hidden>
         <option value="">Sortera</option>
         <option value="price-asc">Billigast först</option>
         <option value="price-desc">Dyrast först</option>
@@ -29,27 +38,8 @@
     </div>
   </header>
 
-  <!-- ===== HERO ===== -->
-  <section class="hero">
-    <!-- Logga som “smälter in” med blend mode -->
-    <div class="hero-brand">
-      <img src="images/logo.png" alt="MedieShoppen logotyp" class="logo-img" />
-    </div>
-
-    <div class="hero-content">
-      <h2 class="hero-title">BACK TO THE BASICS</h2>
-      <p class="hero-sub">Jeans, skjortor och tidlösa plagg.</p>
-      <div class="hero-cta">
-        <a href="#productGrid" class="btn-pill">DAM</a>
-        <a href="#productGrid" class="btn-pill outline">HERR</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== Produkter ===== -->
-  <main class="container">
-    <div id="productGrid" class="grid"></div>
-  </main>
+  <!-- ===== App-root: allt innehåll byts här via JS-router ===== -->
+  <main id="app"></main>
 
   <!-- ===== Footer ===== -->
   <footer>
