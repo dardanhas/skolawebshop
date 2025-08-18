@@ -17,7 +17,7 @@ const PRODUCTS = [
   { id: "p5", name: "Vinterjacka",   price: 3499, img: "images/vinterjacka.jpg", sizes: ["XS","S","M","L"] },
   { id: "p6", name: "Sneakers Adidas",      price: 1299, img: "images/sneakers.jpg",    sizes: ["39","40","41","42","43","44"] },
   { id: "p7", name: "Tröja",         price: 699,  img: "images/tröja.jpg",       sizes: ["XS","S","M","L","XL"] },
-  { id: "p8", name: "Keps North Face",          price: 299,  img: "images/keps.jpg",        sizes: ["One Size"] },
+  { id: "p8", name: "Keps TNF",          price: 299,  img: "images/keps.jpg",        sizes: ["One Size"] },
   { id: "p9", name: "Kappa",          price: 2299, img: "images/coat.jpg",        sizes: ["XS","S","M","L"] },
 ];
 
@@ -88,17 +88,18 @@ function renderProducts() {
   grid.innerHTML = "";
 
   currentProducts.forEach((p) => {
+    const favActive = isFav(p.id);
+    const favIcon = favActive ? "♥" : "♡";
+    const ariaPressed = favActive ? "true" : "false";
+
     const card = document.createElement("article");
     card.className = "card fade-in";
     card.tabIndex = 0;
     card.setAttribute("role", "link");
     card.dataset.id = p.id;
 
-    const favActive = isFav(p.id) ? " active" : "";
-    const ariaPressed = isFav(p.id) ? "true" : "false";
-
     card.innerHTML = `
-      <button class="fav-btn${favActive}" aria-pressed="${ariaPressed}" aria-label="Spara som favorit" data-id="${p.id}">❤</button>
+      <button class="fav-btn${favActive ? " active" : ""}" aria-pressed="${ariaPressed}" aria-label="Spara som favorit" data-id="${p.id}">${favIcon}</button>
 
       <div class="media">
         <img src="${safeSrc(p)}" alt="${p.name}" loading="lazy"
@@ -113,10 +114,7 @@ function renderProducts() {
     const open = () => openProduct(p.id);
     card.addEventListener("click", open);
     card.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        open();
-      }
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
     });
 
     // favorite heart — avoid opening product
@@ -127,6 +125,7 @@ function renderProducts() {
       const active = isFav(p.id);
       favBtn.classList.toggle("active", active);
       favBtn.setAttribute("aria-pressed", active ? "true" : "false");
+      favBtn.textContent = active ? "♥" : "♡";  // update icon
     });
 
     grid.appendChild(card);
@@ -141,10 +140,7 @@ function openProduct(id) {
 
 function viewProduct(id) {
   const p = PRODUCTS.find((x) => x.id === id);
-  if (!p) {
-    navigateTo("#home");
-    return;
-  }
+  if (!p) { navigateTo("#home"); return; }
 
   appRoot().innerHTML = `
     <section class="product-view">
@@ -226,7 +222,6 @@ function viewAbout() {
   const sort = document.getElementById("sortSelect");
   if (sort) sort.hidden = true;
 }
-
 function viewContact() {
   appRoot().innerHTML = `
     <section class="container fade-in">
@@ -254,55 +249,31 @@ function sortProducts(type) {
 }
 
 /* =========================================
-   Router
+   Router & Init
    ========================================= */
 function navigateTo(hash) {
-  if (location.hash === hash) {
-    router();
-  } else {
-    location.hash = hash;
-  }
+  if (location.hash === hash) router();
+  else location.hash = hash;
 }
-
 function router() {
   const h = location.hash || "#home";
   const m = h.match(/^#product[\/-]([^/?#]+)$/);
-  if (m) {
-    viewProduct(m[1]);
-    return;
-  }
-
+  if (m) { viewProduct(m[1]); return; }
   switch (h) {
-    case "#about":
-      viewAbout();
-      break;
-    case "#contact":
-      viewContact();
-      break;
+    case "#about":   viewAbout(); break;
+    case "#contact": viewContact(); break;
     case "#home":
-    default:
-      currentProducts = PRODUCTS.slice();
-      viewHome();
-      break;
+    default:         currentProducts = PRODUCTS.slice(); viewHome(); break;
   }
 }
-
-/* =========================================
-   Init
-   ========================================= */
 window.addEventListener("hashchange", router);
-
 window.addEventListener("DOMContentLoaded", () => {
-  const y = document.getElementById("year");
-  if (y) y.textContent = new Date().getFullYear();
-
+  const y = document.getElementById("year"); if (y) y.textContent = new Date().getFullYear();
   updateCartBadge();
   router();
-
-  // “Butik” i nav scrollar till grid när vi är på Hem
   document.body.addEventListener("click", (e) => {
     const toShop = e.target.closest('[data-link="shop"]');
-    if (toShop) {
+    if (toShop){
       navigateTo("#home");
       setTimeout(() => {
         const grid = document.getElementById("productGrid");
