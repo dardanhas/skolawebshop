@@ -1,17 +1,17 @@
 /* ===== Data ===== */
 const fmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' });
 
-/* Din nya produktlista (9 st) */
+/* Din produktlista (9 st) */
 const PRODUCTS = [
-  { id: 'p1', name: 'Hoodie',       price: 499,  img: 'images/hoodie.jpg',       sizes:['XS','S','M','L','XL'] },
+  { id: 'p1', name: 'MHoodie',       price: 499,  img: 'images/hoodie.jpg',       sizes:['XS','S','M','L','XL'] },
   { id: 'p2', name: 'Basic Jeans',   price: 899,  img: 'images/jeans.jpg',        sizes:['28','30','32','34','36'] },
   { id: 'p3', name: 'Vit T-shirt',   price: 299,  img: 'images/tshirt.jpg',       sizes:['XS','S','M','L','XL'] },
-  { id: 'p4', name: 'Svart T-shirt', price: 299, img: 'images/svarttshirt.jpg',  sizes:['XS','S','M','L','XL'] },
+  { id: 'p4', name: 'Svart T-shirt', price: 2499, img: 'images/svarttshirt.jpg',  sizes:['XS','S','M','L','XL'] },
   { id: 'p5', name: 'Vinterjacka',   price: 3499, img: 'images/vinterjacka.jpg',  sizes:['XS','S','M','L'] },
   { id: 'p6', name: 'Sneakers',      price: 1299, img: 'images/sneakers.jpg',     sizes:['39','40','41','42','43','44'] },
   { id: 'p7', name: 'Tröja',         price: 699,  img: 'images/tröja.jpg',        sizes:['XS','S','M','L','XL'] },
   { id: 'p8', name: 'Keps',          price: 299,  img: 'images/keps.jpg',         sizes:['One Size'] },
-  { id: 'p9', name: 'Kappa',          price: 2299, img: 'images/coat.jpg',         sizes:['XS','S','M','L'] },
+  { id: 'p9', name: 'Coat',          price: 2299, img: 'images/coat.jpg',         sizes:['XS','S','M','L'] },
 ];
 
 let cart = {};
@@ -20,6 +20,7 @@ let currentProducts = [...PRODUCTS];
 /* ===== Helpers ===== */
 const $ = (sel, root=document) => root.querySelector(sel);
 const app = () => document.getElementById('app');
+const safeSrc = p => encodeURI(p.img);
 
 function updateCartBadge(){
   const count = Object.values(cart).reduce((a,b)=>a+b,0);
@@ -55,30 +56,41 @@ function viewHome(){
   renderProducts();
 }
 
-/* Klickbara kort + robust routing */
+/* Klickbara kort via JS: funkar oavsett hashchange */
 function renderProducts(){
   const grid = document.getElementById('productGrid');
   if (!grid) return;
   grid.innerHTML = '';
 
   currentProducts.forEach(p=>{
-    const a = document.createElement('a');
-    a.className = 'card fade-in';
-    a.href = `#product/${p.id}`;
-    a.dataset.id = p.id;
-    a.innerHTML = `
+    const card = document.createElement('article');
+    card.className = 'card fade-in';
+    card.tabIndex = 0;
+    card.setAttribute('role','link');
+    card.dataset.id = p.id;
+    card.innerHTML = `
       <div class="media">
-        <img src="\${encodeURI('${p.img}')}" alt="${p.name}" loading="lazy"
+        <img src="${safeSrc(p)}" alt="${p.name}" loading="lazy"
              onerror="this.onerror=null;this.src='images/fallback.jpg'">
       </div>
       <h3>${p.name}</h3>
       <p class="price">${fmt.format(p.price)}</p>
     `;
-    grid.appendChild(a);
+    // klick + tangent (Enter/Space)
+    const open = () => openProduct(p.id);
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', e=>{
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+    });
+    grid.appendChild(card);
   });
 }
 
-/* Produktdetalj */
+function openProduct(id){
+  navigateTo(`#product/${id}`);
+  router(); // rendera direkt
+}
+
 function viewProduct(id){
   const p = PRODUCTS.find(x=>x.id === id);
   if (!p){ navigateTo('#home'); return; }
@@ -91,7 +103,7 @@ function viewProduct(id){
 
       <div class="product-grid">
         <div class="product-gallery">
-          <img src="\${encodeURI('${p.img}')}" alt="${p.name}" onerror="this.onerror=null;this.src='images/fallback.jpg'">
+          <img src="${safeSrc(p)}" alt="${p.name}" onerror="this.onerror=null;this.src='images/fallback.jpg'">
         </div>
 
         <div class="product-info">
@@ -149,7 +161,7 @@ function viewAbout(){
     <section class="container fade-in">
       <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Om oss</h2>
       <p style="color:var(--muted);max-width:820px">
-        MedieShoppen erbjuder tidlösa basplagg med modern passform. Vårt fokus är kvalitet,
+        DAN25 CLOTHING erbjuder tidlösa basplagg med modern passform. Fokus på kvalitet,
         enkelhet och stilren design i ett mörkt, elegant uttryck.
       </p>
     </section>
@@ -160,7 +172,7 @@ function viewContact(){
   app().innerHTML = `
     <section class="container fade-in">
       <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Kontakt</h2>
-      <p style="color:var(--muted)">Mail: support@medieshoppen.se · Tel: 010-123 45 67</p>
+      <p style="color:var(--muted)">Mail: support@dan25clothing.se · Tel: 010-123 45 67</p>
       <p style="color:var(--muted)">Öppettider: Vardagar 09–17</p>
     </section>
   `;
@@ -189,7 +201,8 @@ function navigateTo(hash){
 
 function router(){
   const h = location.hash || '#home';
-  const m = h.match(/^#product\/(.+)$/);
+  // Stöd både "#product/p1" och "#product-p1" för säkerhets skull
+  const m = h.match(/^#product[\/-]([^/?#]+)$/);
   if (m){ viewProduct(m[1]); return; }
 
   switch (h){
@@ -207,16 +220,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   updateCartBadge();
   router();
 
-  /* Global klick-router:
-     Fångar alla #product/ID-länkar och renderar direkt (även om hashchange failar) */
-  document.addEventListener('click', (e)=>{
-    const link = e.target.closest('a[href^="#product/"]');
-    if (!link) return;
-    e.preventDefault();
-    navigateTo(link.getAttribute('href'));
-  });
-
-  // "Butik" i menyn: hem + scrolla till grid
+  // "Butik" i menyn: hem + scroll till grid
   document.body.addEventListener('click', (e)=>{
     const toShop = e.target.closest('[data-link="shop"]');
     if (toShop){
