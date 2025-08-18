@@ -3,15 +3,15 @@ const fmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' 
 
 /* ===== Products (9 st enligt din lista) ===== */
 const PRODUCTS = [
-  { id: 'p1', name: 'MHoodie',       price: 499,  img: 'images/hoodie.jpg',       sizes:['XS','S','M','L','XL'] },
+  { id: 'p1', name: 'Hoodie',       price: 499,  img: 'images/hoodie.jpg',       sizes:['XS','S','M','L','XL'] },
   { id: 'p2', name: 'Basic Jeans',   price: 899,  img: 'images/jeans.jpg',        sizes:['28','30','32','34','36'] },
   { id: 'p3', name: 'Vit T-shirt',   price: 299,  img: 'images/tshirt.jpg',       sizes:['XS','S','M','L','XL'] },
   { id: 'p4', name: 'Svart T-shirt', price: 2499, img: 'images/svarttshirt.jpg',  sizes:['XS','S','M','L','XL'] },
   { id: 'p5', name: 'Vinterjacka',   price: 3499, img: 'images/vinterjacka.jpg',  sizes:['XS','S','M','L'] },
-  { id: 'p6', name: 'Sneakers',      price: 1299, img: 'images/sneakers.jpg',     sizes:['39','40','41','42','43','44'] },
+  { id: 'p6', name: 'Sneakers Adidas',      price: 1299, img: 'images/sneakers.jpg',     sizes:['39','40','41','42','43','44'] },
   { id: 'p7', name: 'Tröja',         price: 699,  img: 'images/tröja.jpg',        sizes:['XS','S','M','L','XL'] },
-  { id: 'p8', name: 'Keps',          price: 299,  img: 'images/keps.jpg',         sizes:['One Size'] },
-  { id: 'p9', name: 'Coat',          price: 2299, img: 'images/coat.jpg',         sizes:['XS','S','M','L'] },
+  { id: 'p8', name: 'Keps North Face',          price: 299,  img: 'images/keps.jpg',         sizes:['One Size'] },
+  { id: 'p9', name: 'Kappa',          price: 2299, img: 'images/coat.jpg',         sizes:['XS','S','M','L'] },
 ];
 
 let cart = {};
@@ -90,7 +90,6 @@ function renderProducts(){
 }
 
 function openProduct(id){
-  // set hash and render immediately (works even if hashchange is blocked)
   if (location.hash !== `#product/${id}`) location.hash = `#product/${id}`;
   viewProduct(id);
 }
@@ -210,3 +209,27 @@ function router(){
   switch (h){
     case '#about':   return viewAbout();
     case '#contact': return viewContact();
+    case '#home':
+    default:         currentProducts = [...PRODUCTS]; return viewHome();
+  }
+}
+
+/* Init */
+window.addEventListener('hashchange', router);
+window.addEventListener('DOMContentLoaded', ()=>{
+  const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
+  updateCartBadge();
+  router();
+
+  // “Butik” scrollar till grid när vi är på Hem
+  document.body.addEventListener('click', (e)=>{
+    const toShop = e.target.closest('[data-link="shop"]');
+    if (toShop){
+      navigateTo('#home');
+      setTimeout(()=>{
+        const grid = document.getElementById('productGrid');
+        if (grid) grid.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 50);
+    }
+  });
+});
