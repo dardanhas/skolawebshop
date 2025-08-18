@@ -9,7 +9,7 @@
   --accent:#c9a227;
   --radius:10px;
 
-  /* announcement tuning */
+  /* announcement */
   --marquee-gap: 4rem;
   --marquee-speed: 26s;
 }
@@ -24,19 +24,24 @@ body{
 }
 
 /* ==============================
-   HEADER – normal height, centered nav
+   HEADER – brand | centered nav | actions
    ============================== */
 header{
   position:sticky; top:0; z-index:40;
+
   display:grid;
   grid-template-columns: auto 1fr auto;
   align-items:end;
   column-gap: 20px;
+
   padding:clamp(8px, 1.8vw, 14px) 28px;
+
   background:rgba(17,17,17,.9);
   backdrop-filter: blur(8px);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
+
+/* Brand (DAN25 över CLOTHING) */
 .brand{ text-decoration:none; align-self:end; justify-self:start; }
 .brand-wordmark{
   font-family:'Cormorant', serif;
@@ -44,12 +49,13 @@ header{
   letter-spacing:.18em;
   text-transform:uppercase;
   color:#fff;
-  font-size:clamp(0.95rem, 2.1vw, 1.9rem);
+  font-size:clamp(0.95rem, 2.1vw, 1.9rem); /* normal storlek */
   line-height:1.02;
 }
 .brand-wordmark .mark{ color:var(--accent); display:block; }
 .brand-wordmark .rest{ display:block; margin-top:.06rem; }
 
+/* Main nav (centrerad) */
 .main-nav{
   grid-column: 2;
   justify-self: center;
@@ -70,6 +76,7 @@ header{
 }
 .main-nav a:hover{ background:rgba(255,255,255,.06); opacity:1 }
 
+/* Header actions */
 .actions{
   grid-column: 3;
   justify-self: end;
@@ -108,7 +115,7 @@ header{
 .marquee__content{
   display:flex;
   gap:var(--marquee-gap);
-  padding:6px 0;
+  padding:6px 0;                     /* smal rad */
   white-space:nowrap;
   padding-inline-end: var(--marquee-gap);
 }
@@ -121,10 +128,6 @@ header{
 }
 .marquee__content .accent{ color:var(--accent); }
 @keyframes marquee{ from{transform:translateX(0)} to{transform:translateX(-50%)} }
-@media (max-width:900px){
-  :root{ --marquee-gap: 3rem; --marquee-speed: 24s; }
-  .main-nav a{ font-size:.98rem; }
-}
 
 /* ==============================
    HERO
@@ -150,6 +153,7 @@ header{
   background: linear-gradient(180deg, rgba(0,0,0,.30) 0%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.55) 100%);
 }
 @keyframes heroZoom{ 0%{transform:scale(1.04)} 100%{transform:scale(1.12)} }
+
 .hero-content{
   position:relative; z-index:2; height:100%;
   display:grid; place-content:center; text-align:center; padding:0 20px;
@@ -172,9 +176,6 @@ header{
 .btn-pill.outline:hover{ background:#fff; color:#111; }
 
 @keyframes fadeInUp{ from{opacity:0; transform:translateY(40px)} to{opacity:1; transform:translateY(0)} }
-@media (max-width:768px){
-  .hero{ height:65vh; background-image: url('images/hero-mobile.jpg'), url('images/hero.jpg'); }
-}
 
 /* ==============================
    PRODUCT GRID (+ favorites)
@@ -194,15 +195,13 @@ header{
 }
 .card:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,.45); }
 .card:focus-visible{ box-shadow: 0 0 0 3px rgba(201,162,39,.6) }
-
-/* make sure the media stays “under” the heart */
 .media{ position:relative; width:100%; height:340px; overflow:hidden; background:#0f0f0f; }
 .media img{ width:100%; height:100%; object-fit:cover; transition: transform 1s ease; display:block }
 .card:hover .media img{ transform: scale(1.06); }
 .card h3{ font-family:'Cormorant',serif; font-weight:700; font-size:1.15rem; margin:16px 16px 6px; }
 .price{ color:var(--muted); margin:0 16px 14px; }
 
-/* Favorite button (hjärta) — KEEP ABOVE IMAGE */
+/* Favorite heart – alltid över bilden */
 .fav-btn{
   position:absolute; top:10px; right:10px;
   width:36px; height:36px; border-radius:999px;
@@ -213,7 +212,7 @@ header{
   border:1px solid rgba(255,255,255,.25);
   backdrop-filter: blur(2px);
   transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
-  z-index: 5; /* NEW: stays above the image even on hover */
+  z-index: 5;
 }
 .fav-btn:hover{ transform:scale(1.06); }
 .fav-btn.active{
@@ -283,3 +282,97 @@ footer{
 }
 .fade-in{ animation:fadeIn .8s ease both; }
 @keyframes fadeIn{ from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:translateY(0)} }
+
+/* ==============================
+   RESPONSIVE + MOBILMENY
+   ============================== */
+
+/* Produktdetalj staplas tidigare */
+@media (max-width: 900px){
+  .product-grid{ grid-template-columns: 1fr; }
+  .product-gallery{ max-height: 420px; }
+}
+
+/* Tablet: två rader, nav under brand/actions */
+@media (max-width: 820px){
+  header{
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand actions"
+      "nav nav";
+    row-gap: 8px;
+    align-items: center;
+  }
+  .brand{ grid-area: brand; }
+  .main-nav{
+    grid-area: nav;
+    justify-self: center;
+    align-self: center;
+    flex-wrap: wrap;
+    gap: 14px 18px;
+  }
+  .actions{ grid-area: actions; align-self: center; }
+}
+
+/* MOBIL (≤640px): hamburgermeny */
+@media (max-width: 640px){
+  /* Bas-mobil-typografering */
+  .container{ padding: 32px 16px; }
+  .grid{
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .media{ height: 220px; }
+  .fav-btn{ width: 32px; height: 32px; font-size: 16px; }
+  .hero{ height: 58vh; }
+  .hero-title{ font-size: clamp(1.4rem, 9vw, 2.4rem); letter-spacing: .06em; }
+  .hero-sub{ font-size: .95rem; }
+  .btn-pill{ padding: .7rem 1rem; }
+  .main-nav a{ font-size: 1rem; padding: 6px 6px; }
+  header{ padding: 10px 16px; }
+
+  /* Toggle-knapp (hamburger) – visas bara på mobil */
+  .nav-toggle{
+    display:grid;
+    width:40px; height:40px; border-radius:10px;
+    border:1px solid rgba(255,255,255,.18);
+    background:var(--panel); color:var(--text);
+    place-items:center; cursor:pointer;
+    position:relative;
+  }
+  .nav-toggle::before, .nav-toggle::after, .nav-toggle span{
+    content:""; position:absolute; left:9px; right:9px; height:2px; background:#fff; transition:.2s ease;
+  }
+  .nav-toggle::before{ top:12px; }
+  .nav-toggle span{ top:19px; }
+  .nav-toggle::after{ top:26px; }
+
+  /* Drawer: göm nav som panel */
+  .main-nav{
+    position: fixed;
+    top: calc(56px); /* ungefärlig headerhöjd på mobil */
+    left:0; right:0;
+    display:flex; flex-direction:column; align-items:center;
+    gap:14px;
+    background: rgba(17,17,17,.98);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    padding:14px 16px 18px;
+    transform: translateY(-12px);
+    opacity:0; pointer-events:none;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  /* Öppen meny – när body/nav-open är satt via JS */
+  body.nav-open .main-nav{
+    transform:none; opacity:1; pointer-events:auto;
+  }
+  /* Animering till X när öppen */
+  body.nav-open .nav-toggle::before{ transform: translateY(7px) rotate(45deg); }
+  body.nav-open .nav-toggle::after{ transform: translateY(-7px) rotate(-45deg); }
+  body.nav-open .nav-toggle span{ transform: scaleX(0); opacity:0; }
+}
+
+/* Extra litet */
+@media (max-width: 400px){
+  .brand-wordmark{ font-size: clamp(.9rem, 5.5vw, 1.3rem); }
+  .main-nav{ gap: 12px; }
+}
