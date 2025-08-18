@@ -1,176 +1,235 @@
-/* ====== Färger & Tema ====== */
+/* ===========================
+   Globalt & Grundinställningar
+   =========================== */
 :root {
-  --sky: #b0c4de;      /* himmelgrå */
-  --cloud: #ffffff;    /* moln/vita accenter */
-  --text: #2c2c2c;
-  --brand: #9bb5d4;    /* mörkare blågrå accent */
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --radius: 12px;
+  --bg-dark: #0d1117;
+  --text-light: #f0f3f9;
+  --text-muted: #9ca3af;
+  --neon-purple: #c084fc;
+  --neon-cyan: #22d3ee;
+  --neon-lime: #a3e635;
+  --radius: 14px;
+  --shadow: 0 0 20px rgba(0,0,0,0.6);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Poppins','Segoe UI',sans-serif;
-  background: var(--sky);
-  color: var(--text);
+  font-family: 'Poppins', 'Inter', sans-serif;
+  background: linear-gradient(-45deg, #0d1117, #111827, #0d1117, #1e293b);
+  background-size: 400% 400%;
+  animation: bgGradient 30s ease infinite;
+  color: var(--text-light);
+  line-height: 1.6;
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
-/* ====== Animerad bakgrund med moln ====== */
-body::before, body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: -200px;
-  width: 200%;
-  height: 100%;
-  background: url('https://i.ibb.co/FgYpVSh/cloud.png') repeat-x;
-  opacity: 0.25;
-  animation: moveClouds 120s linear infinite;
-  z-index: -1;
-}
-body::after {
-  top: 50px;
-  opacity: 0.15;
-  animation-duration: 200s;
-}
-@keyframes moveClouds {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+/* Långsam rörlig gradient-bakgrund */
+@keyframes bgGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* ====== Header ====== */
+/* ===========================
+   Header
+   =========================== */
 header {
   position: sticky;
   top: 0;
-  background: var(--sky);
-  border-bottom: 2px solid var(--cloud);
-  padding: 15px 25px;
+  width: 100%;
+  padding: 16px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 10;
+  background: rgba(13,17,23,0.6);
+  backdrop-filter: blur(10px);
+  transition: background 0.4s ease;
+  z-index: 50;
+}
+header.scrolled {
+  background: rgba(13,17,23,0.95);
 }
 header h1 {
-  margin: 0;
   font-size: 1.5rem;
-  color: var(--cloud);
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  color: var(--neon-purple);
+  text-shadow: 0 0 8px rgba(192,132,252,0.7);
 }
 .actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
-/* ====== Sök & filter ====== */
+/* ===========================
+   Sök & Select
+   =========================== */
 .searchbar input, .select {
   padding: 8px 12px;
   border-radius: var(--radius);
-  border: 1px solid var(--cloud);
-  background: var(--cloud);
-  color: var(--text);
+  border: 1px solid var(--text-muted);
+  background: #1e293b;
+  color: var(--text-light);
+  transition: border 0.3s ease;
+}
+.searchbar input:focus, .select:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(34,211,238,0.5);
 }
 
-/* ====== Produktgrid ====== */
+/* ===========================
+   Produktgrid
+   =========================== */
 .container {
-  padding: 30px;
+  padding: 40px 20px;
 }
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+  gap: 24px;
 }
 
-/* ====== Produktkort ====== */
+/* ===========================
+   Produktkort
+   =========================== */
 .card {
-  background: var(--cloud);
+  background: #111827;
   border-radius: var(--radius);
-  padding: 20px;
   box-shadow: var(--shadow);
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  padding: 20px;
+  overflow: hidden;
+  transform: translateY(0);
+  transition: transform 0.3s ease, box-shadow 0.4s ease;
+  position: relative;
 }
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 0 25px rgba(192,132,252,0.4);
+  animation: bounce 0.6s;
 }
 .card h3 {
-  margin-top: 0;
+  margin: 10px 0 6px;
 }
 .price {
   font-weight: bold;
-  color: var(--brand);
+  color: var(--neon-cyan);
 }
-
-/* Bild i kort */
 .card .media {
   aspect-ratio: 4 / 3;
+  border-radius: var(--radius);
   overflow: hidden;
-  border-radius: calc(var(--radius) - 4px);
-  background: rgba(255,255,255,.6);
   margin-bottom: 12px;
 }
 .card .media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.02);
-  transition: transform .5s ease;
+  transition: transform 0.6s ease;
 }
 .card:hover .media img {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
-/* ====== Knappar ====== */
+/* Kort-bounce */
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(2px); }
+}
+
+/* ===========================
+   Knappar
+   =========================== */
 button, .btn {
-  background: var(--brand);
-  color: var(--cloud);
+  background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan), var(--neon-lime));
+  background-size: 300% 300%;
+  color: #0d1117;
   border: none;
-  padding: 10px 16px;
+  padding: 10px 18px;
   border-radius: var(--radius);
+  font-weight: bold;
   cursor: pointer;
-  box-shadow: var(--shadow);
-  transition: background 0.3s ease, transform 0.1s ease;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, background-position 1s;
+  box-shadow: 0 0 12px rgba(192,132,252,0.4);
 }
 button:hover, .btn:hover {
-  background: #849cb8;
-  transform: translateY(-1px);
+  background-position: 100% 0;
+  transform: translateY(-2px);
 }
 button:active, .btn:active {
-  animation: btn-bounce .35s cubic-bezier(.34,1.56,.64,1);
-}
-/* Studs-animation */
-@keyframes btn-bounce {
-  0%   { transform: translateY(0) scale(1); }
-  40%  { transform: translateY(-4px) scale(1.03); }
-  100% { transform: translateY(0) scale(1); }
+  transform: scale(0.95);
 }
 
-/* ====== Varukorgs-knapp ====== */
+/* Ripple-effekt */
+button::after, .btn::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.5);
+  display: block;
+  border-radius: 50%;
+  transform: scale(1);
+  opacity: 0;
+  pointer-events: none;
+  animation: none;
+}
+button:active::after, .btn:active::after {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%) scale(0);
+  opacity: 1;
+  animation: ripple 0.6s linear;
+}
+@keyframes ripple {
+  to {
+    transform: translate(-50%,-50%) scale(12);
+    opacity: 0;
+  }
+}
+
+/* ===========================
+   Badge (varukorg)
+   =========================== */
 .cart-btn {
   position: relative;
-  border-radius: var(--radius);
-  padding: 8px 14px;
 }
 .badge {
   position: absolute;
   top: -6px;
   right: -6px;
-  background: crimson;
-  color: white;
+  background: var(--neon-lime);
+  color: #0d1117;
   font-size: 12px;
+  font-weight: bold;
   padding: 2px 6px;
   border-radius: 999px;
-  font-weight: bold;
+  box-shadow: 0 0 10px rgba(163,230,53,0.6);
 }
 
-/* ====== Footer ====== */
+/* ===========================
+   Footer
+   =========================== */
 footer {
+  margin-top: 50px;
+  padding: 24px;
   text-align: center;
-  padding: 20px;
-  color: var(--cloud);
-  background: var(--sky);
-  margin-top: 30px;
-  font-size: 0.9rem;
+  color: var(--text-muted);
+  position: relative;
+}
+footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan), var(--neon-lime));
+  animation: gradient-move 8s linear infinite;
+}
+@keyframes gradient-move {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
