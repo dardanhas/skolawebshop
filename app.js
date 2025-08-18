@@ -7,9 +7,9 @@ const PRODUCTS = [
   { id: 'p4',  name: 'Svart T-shirt',      price: 2499, img: 'images/coat.jpg' },
   { id: 'p5',  name: 'Vinterjacka',      price: 3499, img: 'images/vinterjacka.jpg' },
   { id: 'p6',  name: 'Sneakers',        price: 1299, img: 'images/sneakers.jpg' },
-  { id: 'p7',  name: 'Stickad Tröja',   price: 699,  img: 'images/tröja.jpg' },
-  { id: 'p8',  name: 'Svart Kostym',    price: 4999, img: 'images/keps.jpg' },
-  { id: 'p9', name: 'Trenchcoat',      price: 2299, img: 'images/kappa.jpg' }
+  { id: 'p7',  name: 'Tröja',   price: 699,  img: 'images/tröja.jpg' },
+  { id: 'p8',  name: 'Keps',    price: 299, img: 'images/keps.jpg' },
+  { id: 'p9', name: 'Coat',      price: 2299, img: 'images/kappa.jpg' }
 ];
 
 let cart = {};
