@@ -1,3 +1,4 @@
+/* ===== Data ===== */
 const fmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' });
 
 const PRODUCTS = [
@@ -15,12 +16,54 @@ const PRODUCTS = [
 let cart = {};
 let currentProducts = [...PRODUCTS];
 
+/* ===== Helpers ===== */
+const $ = (sel, root=document) => root.querySelector(sel);
+const app = () => document.getElementById('app');
+
+function updateCartBadge(){
+  const count = Object.values(cart).reduce((a,b)=>a+b,0);
+  const badge = document.getElementById('cartCount');
+  if (badge) badge.textContent = count;
+}
+
+/* ===== Views ===== */
+function viewHome(){
+  app().innerHTML = `
+    <section class="hero">
+      <div class="hero-content">
+        <h2 class="hero-title">BACK TO THE BASICS</h2>
+        <p class="hero-sub">Jeans, skjortor och tidlösa plagg.</p>
+        <div class="hero-cta">
+          <a href="#home" class="btn-pill">DAM</a>
+          <a href="#home" class="btn-pill outline">HERR</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="toolbar">
+        <h3 style="margin-bottom:12px">Butik</h3>
+      </div>
+      <div id="productGrid" class="grid"></div>
+    </section>
+  `;
+
+  // visa sortering när vi är i butik
+  const sort = document.getElementById('sortSelect');
+  if (sort){ sort.hidden = false; sort.value = ""; sort.onchange = e => sortProducts(e.target.value); }
+
+  renderProducts();
+}
+
 function renderProducts(){
   const grid = document.getElementById('productGrid');
+  if (!grid) return;
   grid.innerHTML = '';
   currentProducts.forEach(p=>{
     const card = document.createElement('article');
     card.className = 'card fade-in';
+    card.setAttribute('role','button');
+    card.onclick = () => navigateTo(`#product/${p.id}`);
     card.innerHTML = `
       <div class="media">
         <img src="${p.img}" alt="${p.name}" loading="lazy"
@@ -28,24 +71,101 @@ function renderProducts(){
       </div>
       <h3>${p.name}</h3>
       <p class="price">${fmt.format(p.price)}</p>
-      <button type="button" onclick="addToCart('${p.id}')">Lägg i varukorgen</button>
     `;
     grid.appendChild(card);
   });
 }
 
-function addToCart(id){
-  cart[id] = (cart[id] || 0) + 1;
-  renderCart();
+function viewProduct(id){
+  const p = PRODUCTS.find(x=>x.id === id);
+  if (!p){ navigateTo('#home'); return; }
+
+  app().innerHTML = `
+    <section class="product-view">
+      <div class="breadcrumbs">
+        <a href="#home">Hem</a> / <a href="#home" data-link="shop">Butik</a> / ${p.name}
+      </div>
+
+      <div class="product-grid">
+        <div class="product-gallery">
+          <img src="${p.img}" alt="${p.name}" onerror="this.onerror=null;this.src='images/fallback.jpg'">
+        </div>
+
+        <div class="product-info">
+          <h1>${p.name}</h1>
+          <div class="product-price">${fmt.format(p.price)}</div>
+
+          <div class="controls">
+            <div class="field">
+              <label for="size">Storlek</label>
+              <select id="size" class="select" required>
+                ${p.sizes.map(s=>`<option value="${s}">${s}</option>`).join('')}
+              </select>
+              <div class="sizeguide">
+                <details>
+                  <summary>Storleksguide</summary>
+                  <div style="margin-top:8px;color:var(--muted);font-size:.95rem">
+                    Välj din vanliga storlek. Mellan två storlekar? Ta den större för en lösare passform.
+                  </div>
+                </details>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="qty">Antal</label>
+              <input id="qty" class="qty" type="number" min="1" value="1"/>
+            </div>
+          </div>
+
+          <div class="p-actions">
+            <button class="btn primary" id="addBtn">Lägg i varukorgen</button>
+            <button class="btn" id="backBtn">Tillbaka</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+
+  $('#addBtn').onclick = () => {
+    const qty = Math.max(1, parseInt($('#qty').value || '1',10));
+    cart[p.id] = (cart[p.id] || 0) + qty;
+    updateCartBadge();
+    // liten feedback
+    $('#addBtn').textContent = 'Tillagd ✓';
+    setTimeout(()=> $('#addBtn').textContent = 'Lägg i varukorgen', 1200);
+  };
+
+  $('#backBtn').onclick = () => navigateTo('#home');
+  // dölj sorteringsmenyn på detaljsidan
+  const sort = document.getElementById('sortSelect');
+  if (sort) sort.hidden = true;
 }
 
-function renderCart(){
-  const count = Object.values(cart).reduce((a,b)=>a+b,0);
-  const badge = document.getElementById('cartCount');
-  if (badge) badge.textContent = count;
+function viewAbout(){
+  app().innerHTML = `
+    <section class="container fade-in">
+      <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Om oss</h2>
+      <p style="color:var(--muted);max-width:820px">
+        MedieShoppen erbjuder tidlösa basplagg med modern passform. Vårt fokus är kvalitet,
+        enkelhet och stilren design i ett mörkt, elegant uttryck.
+      </p>
+    </section>
+  `;
+  const sort = document.getElementById('sortSelect'); if (sort) sort.hidden = true;
 }
 
-/* ===== Sortering ===== */
+function viewContact(){
+  app().innerHTML = `
+    <section class="container fade-in">
+      <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Kontakt</h2>
+      <p style="color:var(--muted)">Mail: support@medieshoppen.se · Tel: 010-123 45 67</p>
+      <p style="color:var(--muted)">Öppettider: Vardagar 09–17</p>
+    </section>
+  `;
+  const sort = document.getElementById('sortSelect'); if (sort) sort.hidden = true;
+}
+
+/* ===== Sortering för butikssidan ===== */
 function sortProducts(type){
   if(type === 'price-asc'){
     currentProducts.sort((a,b)=> a.price - b.price);
@@ -59,15 +179,39 @@ function sortProducts(type){
   renderProducts();
 }
 
-window.addEventListener('DOMContentLoaded', ()=>{
-  const y = document.getElementById('year');
-  if (y) y.textContent = new Date().getFullYear();
+/* ===== Router ===== */
+function navigateTo(hash){ location.hash = hash; }
 
-  renderProducts();
-  renderCart();
-
-  const sortSelect = document.getElementById('sortSelect');
-  if (sortSelect){
-    sortSelect.addEventListener('change', e => sortProducts(e.target.value));
+function router(){
+  const h = location.hash || '#home';
+  if (h.startsWith('#product/')){
+    viewProduct(h.split('/')[1]);
+  }else if (h === '#about'){
+    viewAbout();
+  }else if (h === '#contact'){
+    viewContact();
+  }else{ // '#home' eller annat
+    currentProducts = [...PRODUCTS];
+    viewHome();
   }
+}
+
+window.addEventListener('hashchange', router);
+window.addEventListener('DOMContentLoaded', ()=>{
+  const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
+  updateCartBadge();
+  router();
+
+  // "Butik" i menyn ska scrolla till grid när vi är på home
+  document.body.addEventListener('click', (e)=>{
+    const link = e.target.closest('[data-link="shop"]');
+    if (link){
+      navigateTo('#home');
+      // ge grid lite tid att rendera
+      setTimeout(()=>{
+        const grid = document.getElementById('productGrid');
+        if (grid) grid.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 50);
+    }
+  });
 });
