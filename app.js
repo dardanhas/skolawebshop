@@ -16,7 +16,7 @@ const PRODUCTS = [
   { id: "p4", name: "Svart T-shirt", price: 2499, img: "images/svarttshirt.jpg", sizes: ["XS","S","M","L","XL"] },
   { id: "p5", name: "Vinterjacka",   price: 3499, img: "images/vinterjacka.jpg", sizes: ["XS","S","M","L"] },
   { id: "p6", name: "Sneakers Adidas",      price: 1299, img: "images/sneakers.jpg",    sizes: ["39","40","41","42","43","44"] },
-  { id: "p7", name: "Tröja",         price: 699,  img: "images/troja.jpg",       sizes: ["XS","S","M","L","XL"] },
+  { id: "p7", name: "Tröja",         price: 699,  img: "images/troja.jpg",       sizes: ["XS","S","M","L","XL"] },  // <-- troja.jpg
   { id: "p8", name: "Keps TNF",          price: 299,  img: "images/keps.jpg",        sizes: ["One Size"] },
   { id: "p9", name: "Kappa",          price: 2299, img: "images/coat.jpg",        sizes: ["XS","S","M","L"] },
 ];
@@ -38,7 +38,7 @@ function toggleFav(id) {
 /* ----- Helpers ----- */
 const $ = (sel, root = document) => root.querySelector(sel);
 const appRoot = () => document.getElementById("app");
-const safeSrc = (p) => encodeURI(p.img);
+const safeSrc = (p) => p.img.split("/").map(encodeURIComponent).join("/"); // robust mot åäö/mellanslag
 
 function updateCartBadge() {
   const count = Object.values(cart).reduce((a, b) => a + b, 0);
@@ -58,8 +58,7 @@ function viewHome() {
         <p class="hero-sub">Jeans, t-shirts och tidlösa plagg.</p>
         <div class="hero-cta">
           <a href="#home" class="btn-pill">DAM</a>
-          <a href="#home" class="btn-pill">HERR</a>
-          <a href="#home" class="btn-pill outline">UNISEX</a>
+          <a href="#home" class="btn-pill outline">HERR</a>
         </div>
       </div>
     </section>
@@ -111,14 +110,14 @@ function renderProducts() {
       <p class="price">${fmt.format(p.price)}</p>
     `;
 
-    // open product
+    // öppna produktsida
     const open = () => openProduct(p.id);
     card.addEventListener("click", open);
     card.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
     });
 
-    // favorite heart — avoid opening product
+    // favorit-hjärta (stoppa bubblan)
     const favBtn = card.querySelector(".fav-btn");
     favBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -126,7 +125,7 @@ function renderProducts() {
       const active = isFav(p.id);
       favBtn.classList.toggle("active", active);
       favBtn.setAttribute("aria-pressed", active ? "true" : "false");
-      favBtn.textContent = active ? "♥" : "♡";  // update icon
+      favBtn.textContent = active ? "♥" : "♡";
     });
 
     grid.appendChild(card);
@@ -250,6 +249,38 @@ function sortProducts(type) {
 }
 
 /* =========================================
+   Mobile nav (hamburger)
+   ========================================= */
+function setupMobileNav(){
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.querySelector('.main-nav');
+  if(!toggle || !nav) return;
+
+  const close = () => {
+    document.body.classList.remove('nav-open');
+    toggle.setAttribute('aria-expanded','false');
+  };
+  const open = () => {
+    document.body.classList.add('nav-open');
+    toggle.setAttribute('aria-expanded','true');
+  };
+
+  toggle.addEventListener('click', () => {
+    const isOpen = document.body.classList.contains('nav-open');
+    isOpen ? close() : open();
+  });
+
+  // Stäng när man klickar en länk i menyn
+  nav.addEventListener('click', (e)=>{
+    if (e.target.matches('a')) close();
+  });
+
+  // Stäng vid ESC och när fönstret blir större än mobil
+  window.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') close(); });
+  window.addEventListener('resize', ()=>{ if (window.innerWidth > 640) close(); });
+}
+
+/* =========================================
    Router & Init
    ========================================= */
 function navigateTo(hash) {
@@ -267,11 +298,15 @@ function router() {
     default:         currentProducts = PRODUCTS.slice(); viewHome(); break;
   }
 }
+
 window.addEventListener("hashchange", router);
 window.addEventListener("DOMContentLoaded", () => {
   const y = document.getElementById("year"); if (y) y.textContent = new Date().getFullYear();
   updateCartBadge();
+  setupMobileNav();
   router();
+
+  // “Butik” i nav scrollar till grid när vi är på Hem
   document.body.addEventListener("click", (e) => {
     const toShop = e.target.closest('[data-link="shop"]');
     if (toShop){
