@@ -27,47 +27,45 @@ body{
    HEADER
    - grid med 3 kolumner: brand | nav (center) | actions
    - nav centrerad i sidans mitt
-   - alla på samma "botten" (baseline-ish)
+   - alla nedriktade så att nav:ens baslinje matchar CLOTHING (botten)
    ============================== */
 header{
   position:sticky; top:0; z-index:40;
 
   display:grid;
   grid-template-columns: auto 1fr auto;
-  align-items: baseline;                /* håll samma bottenlinje */
+  align-items: end;                    /* lägg alla mot nederkant = CLOTHING-botten */
   column-gap: 20px;
 
-  /* lite smalare header */
-  padding:clamp(8px, 1.8vw, 14px) 28px;
+  padding:clamp(8px, 1.8vw, 14px) 28px;  /* smal header */
 
   background:rgba(17,17,17,.9);
   backdrop-filter: blur(8px);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 
-/* Brand vänster */
-.brand{ text-decoration:none; align-self: baseline; justify-self: start; }
+/* Brand vänster (DAN25 över CLOTHING) */
+.brand{ text-decoration:none; align-self:end; justify-self:start; }
 .brand-wordmark{
   font-family:'Cormorant', serif;
   font-weight:700;
   letter-spacing:.18em;
   text-transform:uppercase;
   color:#fff;
-  /* lite mindre än innan */
-  font-size:clamp(0.95rem, 2.1vw, 1.9rem);
+  font-size:clamp(0.95rem, 2.1vw, 1.9rem);   /* kompakt så headern hålls tunn */
   line-height:1.02;
 }
 .brand-wordmark .mark{ color:var(--accent); display:block; }
 .brand-wordmark .rest{ display:block; margin-top:.06rem; }
 
-/* Nav MITTEN */
+/* Nav MITTEN – centrerad i sidan och på samma "bottenlinje" som CLOTHING */
 .main-nav{
   grid-column: 2;
   justify-self: center;                 /* exakt mitten av sidan */
-  align-self: baseline;
+  align-self: end;                      /* linjera mot botten (CLOTHING) */
 
   display:flex;
-  gap:16px;
+  gap:22px;                             /* lite större avstånd mellan orden */
 }
 .main-nav a{
   color:var(--text); text-decoration:none; font-weight:600; opacity:.9;
@@ -79,7 +77,7 @@ header{
 .actions{
   grid-column: 3;
   justify-self: end;
-  align-self: baseline;
+  align-self: end;
 
   display:flex; align-items:center; gap:10px;
 }
@@ -108,8 +106,8 @@ header{
   overflow:hidden;
 }
 .marquee{
-  display:flex;            /* holds two identical content blocks */
-  width:max-content;       /* shrink to content so translate% is predictable */
+  display:flex;            /* två identiska block i rad */
+  width:max-content;
   animation: marquee var(--marquee-speed) linear infinite;
 }
 .marquee__content{
@@ -117,13 +115,16 @@ header{
   gap:var(--marquee-gap);
   padding:10px 0;
   white-space:nowrap;
+
+  /* extra spacing i "skarven" mellan block 1 och 2 → ingen krock */
+  padding-inline-end: var(--marquee-gap);
 }
 .marquee__content span{
   font-weight:700; letter-spacing:.06em; color:var(--text); opacity:.95;
 }
 .marquee__content .accent{ color:var(--accent); }
 
-/* Move left by 50% (en block-bredd) -> sömlös loop */
+/* Flytta exakt en block-bredd → sömlös loop */
 @keyframes marquee{
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
@@ -131,7 +132,7 @@ header{
 
 @media (max-width:900px){
   :root{ --marquee-gap: 3rem; --marquee-speed: 22s; }
-  .main-nav{ gap:12px; }
+  .main-nav{ gap:14px; }
 }
 
 /* ==============================
