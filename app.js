@@ -1,11 +1,11 @@
 const fmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' });
 
 const PRODUCTS = [
-  { id: 'p1',  name: 'Klassisk Hoodie', price: 499,  img: 'images/hoodie.jpg' },
-  { id: 'p2',  name: 'Svarta Jeans',    price: 899,  img: 'images/jeans.jpg' },
+  { id: 'p1',  name: 'MHoodie', price: 499,  img: 'images/hoodie.jpg' },
+  { id: 'p2',  name: 'Basic Jeans',    price: 899,  img: 'images/jeans.jpg' },
   { id: 'p3',  name: 'Vit T-shirt',     price: 299,  img: 'images/tshirt.jpg' },
-  { id: 'p4',  name: 'Lång Kappa',      price: 2499, img: 'images/coat.jpg' },
-  { id: 'p5',  name: 'Läderjacka',      price: 3499, img: 'images/leather-jacket.jpg' },
+  { id: 'p4',  name: 'Svart T-shirt',      price: 2499, img: 'images/coat.jpg' },
+  { id: 'p5',  name: 'Vinterjacka',      price: 3499, img: 'images/leather-jacket.jpg' },
   { id: 'p6',  name: 'Vit Skjorta',     price: 799,  img: 'images/shirt.jpg' },
   { id: 'p7',  name: 'Sneakers',        price: 1299, img: 'images/sneakers.jpg' },
   { id: 'p8',  name: 'Stickad Tröja',   price: 699,  img: 'images/sweater.jpg' },
@@ -24,7 +24,8 @@ function renderProducts(){
     card.className = 'card fade-in';
     card.innerHTML = `
       <div class="media">
-        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='images/fallback.jpg'">
+        <img src="${p.img}" alt="${p.name}" loading="lazy"
+             onerror="this.onerror=null;this.src='images/fallback.jpg'">
       </div>
       <h3>${p.name}</h3>
       <p class="price">${fmt.format(p.price)}</p>
@@ -42,10 +43,10 @@ function addToCart(id){
 function renderCart(){
   const count = Object.values(cart).reduce((a,b)=>a+b,0);
   const badge = document.getElementById('cartCount');
-  badge.textContent = count;
+  if (badge) badge.textContent = count;
 }
 
-/* Sortering */
+/* ===== Sortering ===== */
 function sortProducts(type){
   if(type === 'price-asc'){
     currentProducts.sort((a,b)=> a.price - b.price);
@@ -60,12 +61,14 @@ function sortProducts(type){
 }
 
 window.addEventListener('DOMContentLoaded', ()=>{
-  document.getElementById('year').textContent = new Date().getFullYear();
+  const y = document.getElementById('year');
+  if (y) y.textContent = new Date().getFullYear();
+
   renderProducts();
   renderCart();
 
   const sortSelect = document.getElementById('sortSelect');
-  if(sortSelect){
+  if (sortSelect){
     sortSelect.addEventListener('change', e => sortProducts(e.target.value));
   }
 });
