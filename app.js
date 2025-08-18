@@ -1,7 +1,7 @@
 const fmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' });
 
 const PRODUCTS = [
-  { id: 'p1',  name: 'MHoodie', price: 499,  img: 'images/hoodie.jpg' },
+ { id: 'p1',  name: 'MHoodie', price: 499,  img: 'images/hoodie.jpg' },
   { id: 'p2',  name: 'Basic Jeans',    price: 899,  img: 'images/jeans.jpg' },
   { id: 'p3',  name: 'Vit T-shirt',     price: 299,  img: 'images/tshirt.jpg' },
   { id: 'p4',  name: 'Svart T-shirt',      price: 2499, img: 'images/svarttshirt.jpg' },
