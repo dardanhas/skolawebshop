@@ -2,7 +2,7 @@
 const fmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' });
 
 const PRODUCTS = [
-  { id: 'p1',  name: 'MHoodie', price: 499,  img: 'images/hoodie.jpg' },
+ { id: 'p1',  name: 'MHoodie', price: 499,  img: 'images/hoodie.jpg' },
   { id: 'p2',  name: 'Basic Jeans',    price: 899,  img: 'images/jeans.jpg' },
   { id: 'p3',  name: 'Vit T-shirt',     price: 299,  img: 'images/tshirt.jpg' },
   { id: 'p4',  name: 'Svart T-shirt',      price: 2499, img: 'images/svarttshirt.jpg' },
@@ -54,16 +54,18 @@ function viewHome(){
   renderProducts();
 }
 
-/* Gör varje kort till en klickbar länk (löser klickproblemet) */
+/* Klickbara kort + defensiv routing */
 function renderProducts(){
   const grid = document.getElementById('productGrid');
   if (!grid) return;
   grid.innerHTML = '';
+
   currentProducts.forEach(p=>{
-    const card = document.createElement('a');
-    card.className = 'card fade-in';
-    card.href = `#product/${p.id}`;
-    card.innerHTML = `
+    const a = document.createElement('a');
+    a.className = 'card fade-in';
+    a.href = `#product/${p.id}`;
+    a.dataset.id = p.id;
+    a.innerHTML = `
       <div class="media">
         <img src="${p.img}" alt="${p.name}" loading="lazy"
              onerror="this.onerror=null;this.src='images/fallback.jpg'">
@@ -71,8 +73,17 @@ function renderProducts(){
       <h3>${p.name}</h3>
       <p class="price">${fmt.format(p.price)}</p>
     `;
-    grid.appendChild(card);
+    grid.appendChild(a);
   });
+
+  /* extra: event-delegering om något skulle blockera hashchange */
+  grid.addEventListener('click', (e)=>{
+    const link = e.target.closest('a.card');
+    if (!link) return;
+    e.preventDefault();
+    navigateTo(link.getAttribute('href'));
+    router(); // rendera direkt
+  }, { once:true });
 }
 
 function viewProduct(id){
@@ -177,20 +188,24 @@ function sortProducts(type){
   renderProducts();
 }
 
-/* ===== Router ===== */
+/* ===== Router (robust) ===== */
 function navigateTo(hash){ location.hash = hash; }
 
 function router(){
   const h = location.hash || '#home';
-  if (h.startsWith('#product/')){
-    viewProduct(h.split('/')[1]);
-  }else if (h === '#about'){
-    viewAbout();
-  }else if (h === '#contact'){
-    viewContact();
-  }else{
-    currentProducts = [...PRODUCTS];
-    viewHome();
+
+  // matcha #product/ID på ett säkert sätt
+  const m = h.match(/^#product\/(.+)$/);
+  if (m){
+    viewProduct(m[1]);
+    return;
+  }
+
+  switch (h){
+    case '#about':   return viewAbout();
+    case '#contact': return viewContact();
+    case '#home':
+    default:         currentProducts = [...PRODUCTS]; return viewHome();
   }
 }
 
