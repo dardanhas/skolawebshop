@@ -1,39 +1,40 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MedieShoppen</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="app.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Min Webshop</title>
+  <link href="https://fonts.cdnfonts.com/css/transcity" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- ===== Header ===== -->
+  <!-- Header -->
   <header>
-    <h1>MedieShoppen</h1>
-    <nav class="actions">
-      <label class="searchbar">
-        <input id="q" type="search" placeholder="Sök... (t.ex. hoodie)">
-      </label>
-      <select id="sort" class="select">
-        <option value="featured">Rekommenderat</option>
-        <option value="price-asc">Pris: Lägst först</option>
-        <option value="price-desc">Pris: Högst först</option>
+    <h1>Min Webshop</h1>
+    <div class="actions">
+      <select id="sortSelect" class="select">
+        <option value="">Sortera</option>
+        <option value="price-asc">Billigast först</option>
+        <option value="price-desc">Dyrast först</option>
+        <option value="name-asc">Namn A–Ö</option>
       </select>
-      <button id="openCart" class="cart-btn">
-        Varukorg <span id="cartCount" class="badge">0</span>
-      </button>
-    </nav>
+      <div class="cart-btn">
+        🛒 <span id="cartCount" class="badge">0</span>
+      </div>
+    </div>
   </header>
 
-  <!-- ===== Produkter ===== -->
+  <!-- Produkter -->
   <main class="container">
     <div id="productGrid" class="grid"></div>
   </main>
 
-  <!-- ===== Footer ===== -->
+  <!-- Footer -->
   <footer>
-    © Min Webshop.
+    <p>© 2025 Min Webshop – Alla rättigheter förbehållna</p>
   </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
