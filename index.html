@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MedieShoppen</title>
+  <title>Min Webshop</title>
 
   <!-- Typsnitt: rund rubrik + modern brödtext -->
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <!-- ===== Header ===== -->
   <header>
-    <h1 class="logo-bubble">MedieShoppen</h1>
+    <h1 class="logo-bubble">Min Webshop</h1>
 
     <div class="actions">
       <select id="sortSelect" class="select" aria-label="Sortera">
@@ -29,7 +28,7 @@
     </div>
   </header>
 
-  <!-- Osynligt SVG-filter som ger “gel/glossy”-känsla till loggan -->
+  <!-- Osynligt SVG-filter till gel/glossy-loggan -->
   <svg width="0" height="0" style="position:absolute;">
     <defs>
       <filter id="gelSpec" x="-20%" y="-20%" width="140%" height="140%">
@@ -43,7 +42,22 @@
     </defs>
   </svg>
 
-  <!-- ===== Innehåll ===== -->
+  <!-- ===== HERO (framsida) ===== -->
+  <section class="hero">
+    <img src="images/hero.jpg" alt="Kampanjbild – Back to jeans" class="hero-img" />
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Super deal</p>
+      <h2 class="hero-title">Back to jeans</h2>
+      <p class="hero-sub">Big Skate jeans från 399:-</p>
+      <div class="hero-cta">
+        <a href="#productGrid" class="btn-pill">DAM</a>
+        <a href="#productGrid" class="btn-pill outline">HERR</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Produkter ===== -->
   <main class="container">
     <div id="productGrid" class="grid"></div>
   </main>
