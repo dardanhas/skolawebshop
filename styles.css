@@ -20,7 +20,7 @@ body{
 }
 
 /* ==============================
-   Header + gel/bubbellogga
+   Header
    ============================== */
 header{
   position:sticky; top:0; z-index:40;
@@ -31,41 +31,14 @@ header{
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 
-/* Rund rubrikstil – gel/glossy med levande rörelse */
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap');
-.logo-bubble{
-  font-family:'Baloo 2',system-ui,sans-serif;
+/* Butikstitel: Cormorant, elegant med diskret glow */
+.brand-title{
+  font-family:'Cormorant', serif;
   font-weight:700;
-  font-size:clamp(2.6rem,6vw,4.6rem);
-  letter-spacing:.5px; line-height:1;
-  background: radial-gradient(140% 200% at 30% 20%, #fff 0%, #f3f3f3 25%, #e5e5e5 45%, #cfcfcf 70%, #b5b5b5 100%);
-  -webkit-background-clip:text; background-clip:text; color:transparent;
-  text-shadow:
-    0 1px 0 rgba(0,0,0,.25),
-    0 2px 0 rgba(0,0,0,.22),
-    0 4px 6px rgba(0,0,0,.35),
-    0 14px 26px rgba(0,0,0,.28);
-  filter: url(#gelSpec) drop-shadow(0 8px 18px rgba(0,0,0,.35));
-  animation: bubbleFloat 5.5s ease-in-out infinite;
-  position:relative; display:inline-block;
-}
-.logo-bubble::after{
-  content:""; position:absolute; inset:-12% -18%;
-  background: linear-gradient(75deg, transparent 30%, rgba(255,255,255,.35) 48%, transparent 66%);
-  transform: translateX(-140%) rotate(3deg);
-  filter: blur(1px);
-  animation: bubbleSheen 7s ease-in-out infinite .8s;
-  pointer-events:none;
-}
-@keyframes bubbleFloat{
-  0%,100% { transform: translateY(0) scale(1); }
-  40%     { transform: translateY(-2px) scale(1.012); }
-  70%     { transform: translateY(1px)  scale(0.998); }
-}
-@keyframes bubbleSheen{
-  0%   { transform: translateX(-140%) rotate(3deg); opacity:.55; }
-  55%  { transform: translateX(140%)  rotate(3deg); opacity:.85; }
-  100% { transform: translateX(140%)  rotate(3deg); opacity:0; }
+  letter-spacing:.04em;
+  font-size:clamp(2.2rem,5vw,3.6rem);
+  color:var(--accent);
+  text-shadow: 0 2px 12px rgba(201,162,39,.25);
 }
 
 .actions{display:flex; align-items:center; gap:12px}
@@ -83,55 +56,70 @@ header{
 .hero{
   position:relative; overflow:hidden;
   height: min(78vh, 760px);
-  /* Din stora bild 4000×2667 – cover gör att den beskärs snyggt */
-  background-image: url('images/hero.jpg');
-  background-size: cover;           /* fyll ytan utan att förvränga */
-  background-position: center;      /* centrera motivet */
+  background-image: url('images/hero.jpg');   /* 4000x2667 funkar, cover beskär snyggt */
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
   border-bottom: 1px solid rgba(255,255,255,.06);
 }
-/* långsam Ken-Burns zoom för djup */
+/* långsam Ken Burns-zoom för djup */
 .hero::before{
-  content:"";
-  position:absolute; inset:0;
-  background: inherit;               /* samma bild */
-  background-size: inherit;
-  background-position: inherit;
-  background-repeat: inherit;
-  transform: scale(1.04);            /* startliten zoom */
+  content:""; position:absolute; inset:0;
+  background: inherit; background-size: inherit; background-position: inherit; background-repeat: inherit;
+  transform: scale(1.04);
   animation: heroZoom 30s ease-in-out infinite alternate;
-  will-change: transform;
-  z-index:0;
+  will-change: transform; z-index:0;
 }
 /* mörk overlay för läsbar text */
 .hero::after{
-  content:"";
-  position:absolute; inset:0;
+  content:""; position:absolute; inset:0; z-index:1;
   background:
     linear-gradient(180deg, rgba(0,0,0,.32) 0%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.55) 100%),
     radial-gradient(70% 60% at 10% 10%, rgba(0,0,0,.45) 0%, transparent 60%);
-  z-index:1;
 }
-@keyframes heroZoom{
-  0%   { transform: scale(1.04); }
-  100% { transform: scale(1.12); }
+@keyframes heroZoom{ 0%{transform:scale(1.04)} 100%{transform:scale(1.12)} }
+
+/* Logga ovanpå hero */
+.hero-brand{
+  position:absolute; top:12%; left:50%; transform:translateX(-50%);
+  z-index:2; display:grid; place-items:center;
+}
+/* Maska bort svart: vita delar av loggan blir synliga */
+.logo-mask{
+  width:min(260px, 40vw); aspect-ratio:1/1;
+  background:#fff;
+  -webkit-mask-image:url('images/logo.png');
+          mask-image:url('images/logo.png');
+  -webkit-mask-size:contain; mask-size:contain;
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  -webkit-mask-position:center; mask-position:center;
+  filter: drop-shadow(0 8px 30px rgba(255,255,255,.35));
+  opacity:.95;
+}
+/* Fallback: visa vanlig bild om mask inte stöds */
+.logo-fallback{ display:none; width:min(260px,40vw); height:auto; filter: drop-shadow(0 8px 30px rgba(255,255,255,.25)); }
+@supports not (mask-image: url("")) and not (-webkit-mask-image: url("")){
+  .logo-mask{ display:none }
+  .logo-fallback{ display:block }
 }
 
 .hero-content{
   position:relative; z-index:2; height:100%;
   display:grid; place-content:center; text-align:center; padding:0 20px;
   animation: fadeInUp 1.2s ease both;
+  gap:.8rem;
 }
-.hero-eyebrow{
-  color:#eaeaea; opacity:.9; font-weight:600; letter-spacing:.08em;
-  text-transform:uppercase; font-size:.9rem; margin-bottom:.4rem;
-}
+/* Hero-typografi: Cinzel, versaler */
 .hero-title{
-  font-family:'Inter',system-ui,sans-serif;
-  font-weight:800; letter-spacing:-.02em;
-  font-size:clamp(2.2rem, 6vw, 4.2rem);
+  font-family:'Cinzel', serif;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  font-size:clamp(1.8rem, 5.6vw, 3.8rem);
+  color:#fff;
+  text-shadow: 0 4px 22px rgba(0,0,0,.6);
 }
-.hero-sub{ color:#e7e7e7; opacity:.92; margin-top:.4rem; margin-bottom:1.2rem; }
+.hero-sub{ color:#e7e7e7; opacity:.92; margin-bottom:1rem; }
 .hero-cta{ display:inline-flex; gap:12px; }
 .btn-pill{
   display:inline-block; padding:.8rem 1.2rem; border-radius:999px;
@@ -142,19 +130,16 @@ header{
 .btn-pill.outline{ background:transparent; color:#fff; border-color:#fff; }
 .btn-pill.outline:hover{ background:#fff; color:#111; }
 
-@keyframes fadeInUp{
-  from{ opacity:0; transform:translateY(40px); }
-  to  { opacity:1; transform:translateY(0); }
-}
+@keyframes fadeInUp{ from{opacity:0; transform:translateY(40px)} to{opacity:1; transform:translateY(0)} }
 
-/* Mobil: använd hero-mobile.jpg om du har en vertikal beskärning */
+/* Mobil: använd hero-mobile.jpg om du har den */
 @media (max-width: 768px){
   .hero{
     height:65vh;
-    background-image: url('images/hero-mobile.jpg'), url('images/hero.jpg'); /* fallback till hero.jpg */
-    background-size: cover;
-    background-position: center;
+    background-image: url('images/hero-mobile.jpg'), url('images/hero.jpg');
+    background-size: cover; background-position: center;
   }
+  .hero-brand{ top:10% }
 }
 
 /* ==============================
@@ -181,13 +166,14 @@ header{
 .card:hover .media img{ transform: scale(1.06); }
 
 .card h3{
-  font-family:'Playfair Display',serif;
+  font-family:'Cormorant',serif;
+  font-weight:700;
   font-size:1.15rem; margin:16px 16px 6px;
 }
 .price{ color:var(--muted); margin:0 16px 14px; }
 
 /* ==============================
-   Knappar
+   Knappar (produkterna)
    ============================== */
 button{
   margin:0 16px 18px; padding:10px 16px;
