@@ -1,7 +1,7 @@
 /* ===== Currency ===== */
 const fmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' });
 
-/* ===== Products ===== */
+/* ===== Products (9 st) ===== */
 const PRODUCTS = [
   { id: 'p1', name: 'Hoodie',       price: 499,  img: 'images/hoodie.jpg',       sizes:['XS','S','M','L','XL'] },
   { id: 'p2', name: 'Basic Jeans',   price: 899,  img: 'images/jeans.jpg',        sizes:['28','30','32','34','36'] },
