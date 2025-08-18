@@ -1,17 +1,17 @@
-/* ===== Data ===== */
+/* ===== Currency ===== */
 const fmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' });
 
-/* Din produktlista (9 st) */
+/* ===== Products (9 st enligt din lista) ===== */
 const PRODUCTS = [
-  { id: 'p1', name: 'Hoodie',        price: 499,  img: 'images/hoodie.jpg',       sizes:['XS','S','M','L','XL'] },
-  { id: 'p2', name: 'Svarta Jeans',   price: 899,  img: 'images/jeans.jpg',        sizes:['28','30','32','34','36'] },
+  { id: 'p1', name: 'MHoodie',       price: 499,  img: 'images/hoodie.jpg',       sizes:['XS','S','M','L','XL'] },
+  { id: 'p2', name: 'Basic Jeans',   price: 899,  img: 'images/jeans.jpg',        sizes:['28','30','32','34','36'] },
   { id: 'p3', name: 'Vit T-shirt',   price: 299,  img: 'images/tshirt.jpg',       sizes:['XS','S','M','L','XL'] },
-  { id: 'p4', name: 'Svart T-shirt', price: 299, img: 'images/svarttshirt.jpg',  sizes:['XS','S','M','L','XL'] },
+  { id: 'p4', name: 'Svart T-shirt', price: 2499, img: 'images/svarttshirt.jpg',  sizes:['XS','S','M','L','XL'] },
   { id: 'p5', name: 'Vinterjacka',   price: 3499, img: 'images/vinterjacka.jpg',  sizes:['XS','S','M','L'] },
-  { id: 'p6', name: 'Sneakers Adidas',      price: 1299, img: 'images/sneakers.jpg',     sizes:['39','40','41','42','43','44'] },
-  { id: 'p7', name: 'Tröja',         price: 699,  img: 'images/troja.jpg',        sizes:['XS','S','M','L','XL'] },
-  { id: 'p8', name: 'Keps North Face',          price: 299,  img: 'images/keps.jpg',         sizes:['One Size'] },
-  { id: 'p9', name: 'Kappa',          price: 2299, img: 'images/coat.jpg',         sizes:['XS','S','M','L'] },
+  { id: 'p6', name: 'Sneakers',      price: 1299, img: 'images/sneakers.jpg',     sizes:['39','40','41','42','43','44'] },
+  { id: 'p7', name: 'Tröja',         price: 699,  img: 'images/tröja.jpg',        sizes:['XS','S','M','L','XL'] },
+  { id: 'p8', name: 'Keps',          price: 299,  img: 'images/keps.jpg',         sizes:['One Size'] },
+  { id: 'p9', name: 'Coat',          price: 2299, img: 'images/coat.jpg',         sizes:['XS','S','M','L'] },
 ];
 
 let cart = {};
@@ -37,8 +37,7 @@ function viewHome(){
         <p class="hero-sub">Jeans, t-shirts och tidlösa plagg.</p>
         <div class="hero-cta">
           <a href="#home" class="btn-pill">DAM</a>
-          <a href="#home" class="btn-pill">HERR</a>
-          <a href="#home" class="btn-pill outline">UNISEX</a>
+          <a href="#home" class="btn-pill outline">HERR</a>
         </div>
       </div>
     </section>
@@ -52,12 +51,16 @@ function viewHome(){
   `;
 
   const sort = document.getElementById('sortSelect');
-  if (sort){ sort.hidden = false; sort.value = ""; sort.onchange = e => sortProducts(e.target.value); }
+  if (sort){
+    sort.hidden = false;
+    sort.value = "";
+    sort.onchange = (e) => sortProducts(e.target.value);
+  }
 
   renderProducts();
 }
 
-/* Klickbara kort via JS: funkar oavsett hashchange */
+/* Produktgrid – artiklar klickas med JS (oberoende av hashchange) */
 function renderProducts(){
   const grid = document.getElementById('productGrid');
   if (!grid) return;
@@ -77,7 +80,6 @@ function renderProducts(){
       <h3>${p.name}</h3>
       <p class="price">${fmt.format(p.price)}</p>
     `;
-    // klick + tangent (Enter/Space)
     const open = () => openProduct(p.id);
     card.addEventListener('click', open);
     card.addEventListener('keydown', e=>{
@@ -88,8 +90,9 @@ function renderProducts(){
 }
 
 function openProduct(id){
-  navigateTo(`#product/${id}`);
-  router(); // rendera direkt
+  // set hash and render immediately (works even if hashchange is blocked)
+  if (location.hash !== `#product/${id}`) location.hash = `#product/${id}`;
+  viewProduct(id);
 }
 
 function viewProduct(id){
@@ -156,11 +159,11 @@ function viewProduct(id){
   if (sort) sort.hidden = true;
 }
 
-/* Statics */
+/* Static pages */
 function viewAbout(){
   app().innerHTML = `
     <section class="container fade-in">
-      <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Om oss</h2>
+      <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Om Oss</h2>
       <p style="color:var(--muted);max-width:820px">
         DAN25 CLOTHING erbjuder tidlösa basplagg med modern passform. Fokus på kvalitet,
         enkelhet och stilren design i ett mörkt, elegant uttryck.
@@ -180,7 +183,7 @@ function viewContact(){
   const sort = document.getElementById('sortSelect'); if (sort) sort.hidden = true;
 }
 
-/* Sortering */
+/* Sorting */
 function sortProducts(type){
   if(type === 'price-asc'){
     currentProducts.sort((a,b)=> a.price - b.price);
@@ -194,15 +197,13 @@ function sortProducts(type){
   renderProducts();
 }
 
-/* ===== Router (extra robust) ===== */
+/* Router (fallback; primary navigation is JS click) */
 function navigateTo(hash){
   if (location.hash === hash){ router(); }
   else { location.hash = hash; }
 }
-
 function router(){
   const h = location.hash || '#home';
-  // Stöd både "#product/p1" och "#product-p1" för säkerhets skull
   const m = h.match(/^#product[\/-]([^/?#]+)$/);
   if (m){ viewProduct(m[1]); return; }
 
@@ -221,7 +222,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   updateCartBadge();
   router();
 
-  // "Butik" i menyn: hem + scroll till grid
+  // “Butik” scrollar till grid när vi är på Hem
   document.body.addEventListener('click', (e)=>{
     const toShop = e.target.closest('[data-link="shop"]');
     if (toShop){
