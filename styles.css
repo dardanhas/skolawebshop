@@ -2,12 +2,16 @@
    THEME
    ============================== */
 :root{
-  --bg:#111;        /* page background */
-  --panel:#1a1a1a;  /* cards/panels */
+  --bg:#111;
+  --panel:#1a1a1a;
   --text:#f5f5f5;
   --muted:#bfbfbf;
-  --accent:#c9a227; /* gold */
+  --accent:#c9a227;
   --radius:10px;
+
+  /* announcement tuning */
+  --marquee-gap: 6rem;     /* större avstånd mellan texterna */
+  --marquee-speed: 24s;    /* långsammare rullning */
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -35,7 +39,7 @@ header{
 }
 .left{
   display:flex;
-  align-items: baseline;  /* keep nav on same baseline as brand text */
+  align-items: baseline;  /* nav på samma baslinje som brandens text */
   gap:24px;
 }
 .brand{ text-decoration:none }
@@ -45,16 +49,19 @@ header{
   letter-spacing:.18em;
   text-transform:uppercase;
   color:#fff;
-  font-size:clamp(1.6rem,3.8vw,3.2rem);
+  /* lite mindre än tidigare (~15% mindre) */
+  font-size:clamp(1.36rem, 3.2vw, 2.8rem);
   line-height:1;
 }
 .brand-wordmark .mark{ color:var(--accent); }
+
 .main-nav{ display:flex; gap:18px; }
 .main-nav a{
   color:var(--text); text-decoration:none; font-weight:600; opacity:.9;
   padding:6px 8px; border-radius:8px; transition: background .2s ease, opacity .2s ease;
 }
 .main-nav a:hover{ background:rgba(255,255,255,.06); opacity:1 }
+
 .actions{ display:flex; align-items:center; gap:12px }
 .select{
   padding:8px 12px; border-radius:var(--radius);
@@ -81,10 +88,12 @@ header{
   overflow:hidden;
 }
 .announcement__track{
-  display:inline-flex; gap:3rem; white-space:nowrap;
+  display:inline-flex;
+  gap:var(--marquee-gap);
+  white-space:nowrap;
   padding:10px 0;
   will-change: transform;
-  animation: marquee-ltr 16s linear infinite;
+  animation: marquee-ltr var(--marquee-speed) linear infinite;
 }
 .announcement__track span{ font-weight:700; letter-spacing:.06em; color:var(--text); opacity:.95; }
 .announcement__track .accent{ color:var(--accent); }
@@ -95,7 +104,7 @@ header{
 @media (max-width:900px){
   .left{ gap:16px; }
   .main-nav{ gap:12px; }
-  .announcement__track{ gap:2rem; animation-duration:14s; }
+  :root{ --marquee-gap: 3rem; --marquee-speed: 20s; }
 }
 
 /* ==============================
