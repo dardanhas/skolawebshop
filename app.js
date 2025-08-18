@@ -48,22 +48,21 @@ function viewHome(){
     </section>
   `;
 
-  // visa sortering när vi är i butik
   const sort = document.getElementById('sortSelect');
   if (sort){ sort.hidden = false; sort.value = ""; sort.onchange = e => sortProducts(e.target.value); }
 
   renderProducts();
 }
 
+/* Gör varje kort till en klickbar länk (löser klickproblemet) */
 function renderProducts(){
   const grid = document.getElementById('productGrid');
   if (!grid) return;
   grid.innerHTML = '';
   currentProducts.forEach(p=>{
-    const card = document.createElement('article');
+    const card = document.createElement('a');
     card.className = 'card fade-in';
-    card.setAttribute('role','button');
-    card.onclick = () => navigateTo(`#product/${p.id}`);
+    card.href = `#product/${p.id}`;
     card.innerHTML = `
       <div class="media">
         <img src="${p.img}" alt="${p.name}" loading="lazy"
@@ -130,13 +129,12 @@ function viewProduct(id){
     const qty = Math.max(1, parseInt($('#qty').value || '1',10));
     cart[p.id] = (cart[p.id] || 0) + qty;
     updateCartBadge();
-    // liten feedback
     $('#addBtn').textContent = 'Tillagd ✓';
     setTimeout(()=> $('#addBtn').textContent = 'Lägg i varukorgen', 1200);
   };
 
   $('#backBtn').onclick = () => navigateTo('#home');
-  // dölj sorteringsmenyn på detaljsidan
+
   const sort = document.getElementById('sortSelect');
   if (sort) sort.hidden = true;
 }
@@ -165,7 +163,7 @@ function viewContact(){
   const sort = document.getElementById('sortSelect'); if (sort) sort.hidden = true;
 }
 
-/* ===== Sortering för butikssidan ===== */
+/* ===== Sortering ===== */
 function sortProducts(type){
   if(type === 'price-asc'){
     currentProducts.sort((a,b)=> a.price - b.price);
@@ -190,7 +188,7 @@ function router(){
     viewAbout();
   }else if (h === '#contact'){
     viewContact();
-  }else{ // '#home' eller annat
+  }else{
     currentProducts = [...PRODUCTS];
     viewHome();
   }
@@ -202,12 +200,11 @@ window.addEventListener('DOMContentLoaded', ()=>{
   updateCartBadge();
   router();
 
-  // "Butik" i menyn ska scrolla till grid när vi är på home
+  // "Butik" i menyn: hem + scrolla till grid
   document.body.addEventListener('click', (e)=>{
     const link = e.target.closest('[data-link="shop"]');
     if (link){
       navigateTo('#home');
-      // ge grid lite tid att rendera
       setTimeout(()=>{
         const grid = document.getElementById('productGrid');
         if (grid) grid.scrollIntoView({behavior:'smooth', block:'start'});
