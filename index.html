@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Min Webshop</title>
-  <link href="https://fonts.cdnfonts.com/css/transcity" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+
+  <!-- Rund, “levande” logotypkänsla -->
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <!-- Header -->
   <header>
-    <h1>Min Webshop</h1>
+    <h1 class="logo-text">Min Webshop</h1>
+
     <div class="actions">
-      <select id="sortSelect" class="select">
+      <select id="sortSelect" class="select" aria-label="Sortera">
         <option value="">Sortera</option>
         <option value="price-asc">Billigast först</option>
         <option value="price-desc">Dyrast först</option>
         <option value="name-asc">Namn A–Ö</option>
       </select>
-      <div class="cart-btn">
+
+      <button class="cart-btn" type="button" title="Varukorg">
         🛒 <span id="cartCount" class="badge">0</span>
-      </div>
+      </button>
     </div>
   </header>
 
@@ -30,9 +34,8 @@
     <div id="productGrid" class="grid"></div>
   </main>
 
-  <!-- Footer -->
   <footer>
-    <p>© 2025 Min Webshop – Alla rättigheter förbehållna</p>
+    © <span id="year"></span> Min Webshop
   </footer>
 
   <script src="app.js"></script>
