@@ -5,12 +5,11 @@ const PRODUCTS = [
   { id: 'p2',  name: 'Basic Jeans',    price: 899,  img: 'images/jeans.jpg' },
   { id: 'p3',  name: 'Vit T-shirt',     price: 299,  img: 'images/tshirt.jpg' },
   { id: 'p4',  name: 'Svart T-shirt',      price: 2499, img: 'images/coat.jpg' },
-  { id: 'p5',  name: 'Vinterjacka',      price: 3499, img: 'images/leather-jacket.jpg' },
-  { id: 'p6',  name: 'Vit Skjorta',     price: 799,  img: 'images/shirt.jpg' },
-  { id: 'p7',  name: 'Sneakers',        price: 1299, img: 'images/sneakers.jpg' },
-  { id: 'p8',  name: 'Stickad Tröja',   price: 699,  img: 'images/sweater.jpg' },
-  { id: 'p9',  name: 'Svart Kostym',    price: 4999, img: 'images/suit.jpg' },
-  { id: 'p10', name: 'Trenchcoat',      price: 2299, img: 'images/trenchcoat.jpg' }
+  { id: 'p5',  name: 'Vinterjacka',      price: 3499, img: 'images/vinterjacka.jpg' },
+  { id: 'p6',  name: 'Sneakers',        price: 1299, img: 'images/sneakers.jpg' },
+  { id: 'p7',  name: 'Stickad Tröja',   price: 699,  img: 'images/tröja.jpg' },
+  { id: 'p8',  name: 'Svart Kostym',    price: 4999, img: 'images/keps.jpg' },
+  { id: 'p9', name: 'Trenchcoat',      price: 2299, img: 'images/kappa.jpg' }
 ];
 
 let cart = {};
