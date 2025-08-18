@@ -1,7 +1,7 @@
 /* ===== Currency ===== */
 const fmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' });
 
-/* ===== Products (9 st enligt din lista) ===== */
+/* ===== Products ===== */
 const PRODUCTS = [
   { id: 'p1', name: 'Hoodie',       price: 499,  img: 'images/hoodie.jpg',       sizes:['XS','S','M','L','XL'] },
   { id: 'p2', name: 'Basic Jeans',   price: 899,  img: 'images/jeans.jpg',        sizes:['28','30','32','34','36'] },
@@ -16,6 +16,15 @@ const PRODUCTS = [
 
 let cart = {};
 let currentProducts = [...PRODUCTS];
+
+/* ===== Favorites (hjärtan) ===== */
+const FAV_KEY = 'dan25:favs';
+let favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]'));
+const isFav = id => favs.has(id);
+function toggleFav(id){
+  if (favs.has(id)) favs.delete(id); else favs.add(id);
+  localStorage.setItem(FAV_KEY, JSON.stringify([...favs]));
+}
 
 /* ===== Helpers ===== */
 const $ = (sel, root=document) => root.querySelector(sel);
@@ -60,19 +69,23 @@ function viewHome(){
   renderProducts();
 }
 
-/* Produktgrid – artiklar klickas med JS (oberoende av hashchange) */
+/* Produktgrid – med hjärta i hörnet */
 function renderProducts(){
   const grid = document.getElementById('productGrid');
   if (!grid) return;
   grid.innerHTML = '';
 
   currentProducts.forEach(p=>{
+    const favActive = isFav(p.id) ? ' active' : '';
+    const ariaPressed = isFav(p.id) ? 'true' : 'false';
+
     const card = document.createElement('article');
     card.className = 'card fade-in';
     card.tabIndex = 0;
     card.setAttribute('role','link');
     card.dataset.id = p.id;
     card.innerHTML = `
+      <button class="fav-btn${favActive}" aria-pressed="${ariaPressed}" aria-label="Spara som favorit" data-id="${p.id}">❤</button>
       <div class="media">
         <img src="${safeSrc(p)}" alt="${p.name}" loading="lazy"
              onerror="this.onerror=null;this.src='images/fallback.jpg'">
@@ -80,11 +93,24 @@ function renderProducts(){
       <h3>${p.name}</h3>
       <p class="price">${fmt.format(p.price)}</p>
     `;
+
+    // Öppna produktsida
     const open = () => openProduct(p.id);
     card.addEventListener('click', open);
     card.addEventListener('keydown', e=>{
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
     });
+
+    // Hjärta – stoppa bubbla så kortet inte öppnas
+    const favBtn = card.querySelector('.fav-btn');
+    favBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      toggleFav(p.id);
+      const active = isFav(p.id);
+      favBtn.classList.toggle('active', active);
+      favBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+
     grid.appendChild(card);
   });
 }
@@ -196,7 +222,7 @@ function sortProducts(type){
   renderProducts();
 }
 
-/* Router (fallback; primary navigation is JS click) */
+/* Router */
 function navigateTo(hash){
   if (location.hash === hash){ router(); }
   else { location.hash = hash; }
