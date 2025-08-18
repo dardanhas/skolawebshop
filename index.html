@@ -1,63 +1,176 @@
-<!doctype html>
-<html lang="sv">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Min Webshop</title>
-  <meta name="description" content="En enkel, responsiv webshop byggd med HTML, CSS och JavaScript (ingen backend)." />
-  <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
-</head>
-<body>
-  <!-- Här börjar innehållet -->
-  <header>
-    <nav class="nav container">
-      <a href="#" class="brand">
-        <span class="logo"></span>
-        <h1>Min Webshop</h1>
-      </a>
-      <div class="actions">
-        <label class="searchbar">
-          <input id="q" type="search" placeholder="Sök… (t.ex. hoodie)" autocomplete="off"/>
-        </label>
-        <select id="sort" class="select">
-          <option value="featured">Rekommenderat</option>
-          <option value="price-asc">Pris: Lägst först</option>
-          <option value="price-desc">Pris: Högst först</option>
-        </select>
-        <button id="openCart" class="cart-btn">
-          Varukorg <span id="cartCount" class="badge">0</span>
-        </button>
-      </div>
-    </nav>
-  </header>
+/* ====== Färger & Tema ====== */
+:root {
+  --sky: #b0c4de;      /* himmelgrå */
+  --cloud: #ffffff;    /* moln/vita accenter */
+  --text: #2c2c2c;
+  --brand: #9bb5d4;    /* mörkare blågrå accent */
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --radius: 12px;
+}
 
-  <div class="container">
-    <div class="toolbar">
-      <div class="filters" id="filters"></div>
-      <div class="muted">Frakt: <strong>49 kr</strong> (gratis över <strong>500 kr</strong>)</div>
-    </div>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <section class="grid" id="productGrid"></section>
-  </div>
+body {
+  font-family: 'Poppins','Segoe UI',sans-serif;
+  background: var(--sky);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-  <aside id="drawer" class="drawer">
-    <header>
-      <strong>Din varukorg</strong>
-      <button id="closeCart" class="btn secondary">Stäng</button>
-    </header>
-    <div class="body" id="cartItems"></div>
-    <div class="footer">
-      <div class="line"><span>Delsumma</span><span id="subtotal" class="price"></span></div>
-      <div class="line"><span>Frakt</span><span id="shipping" class="price"></span></div>
-      <div class="line"><span>Moms (25%)</span><span id="vat" class="price"></span></div>
-      <div class="divider"></div>
-      <div class="line total"><span>Att betala</span><span id="total" class="price"></span></div>
-      <button id="checkoutBtn" class="btn">Till kassan</button>
-    </div>
-  </aside>
+/* ====== Animerad bakgrund med moln ====== */
+body::before, body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: -200px;
+  width: 200%;
+  height: 100%;
+  background: url('https://i.ibb.co/FgYpVSh/cloud.png') repeat-x;
+  opacity: 0.25;
+  animation: moveClouds 120s linear infinite;
+  z-index: -1;
+}
+body::after {
+  top: 50px;
+  opacity: 0.15;
+  animation-duration: 200s;
+}
+@keyframes moveClouds {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
 
-  <footer class="container">© <span id="year"></span> Min Webshop.</footer>
-</body>
-</html>
+/* ====== Header ====== */
+header {
+  position: sticky;
+  top: 0;
+  background: var(--sky);
+  border-bottom: 2px solid var(--cloud);
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--cloud);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+.actions {
+  display: flex;
+  gap: 10px;
+}
 
+/* ====== Sök & filter ====== */
+.searchbar input, .select {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--cloud);
+  background: var(--cloud);
+  color: var(--text);
+}
+
+/* ====== Produktgrid ====== */
+.container {
+  padding: 30px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 20px;
+}
+
+/* ====== Produktkort ====== */
+.card {
+  background: var(--cloud);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+.card h3 {
+  margin-top: 0;
+}
+.price {
+  font-weight: bold;
+  color: var(--brand);
+}
+
+/* Bild i kort */
+.card .media {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: calc(var(--radius) - 4px);
+  background: rgba(255,255,255,.6);
+  margin-bottom: 12px;
+}
+.card .media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform .5s ease;
+}
+.card:hover .media img {
+  transform: scale(1.08);
+}
+
+/* ====== Knappar ====== */
+button, .btn {
+  background: var(--brand);
+  color: var(--cloud);
+  border: none;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: background 0.3s ease, transform 0.1s ease;
+}
+button:hover, .btn:hover {
+  background: #849cb8;
+  transform: translateY(-1px);
+}
+button:active, .btn:active {
+  animation: btn-bounce .35s cubic-bezier(.34,1.56,.64,1);
+}
+/* Studs-animation */
+@keyframes btn-bounce {
+  0%   { transform: translateY(0) scale(1); }
+  40%  { transform: translateY(-4px) scale(1.03); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* ====== Varukorgs-knapp ====== */
+.cart-btn {
+  position: relative;
+  border-radius: var(--radius);
+  padding: 8px 14px;
+}
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: crimson;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-weight: bold;
+}
+
+/* ====== Footer ====== */
+footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--cloud);
+  background: var(--sky);
+  margin-top: 30px;
+  font-size: 0.9rem;
+}
