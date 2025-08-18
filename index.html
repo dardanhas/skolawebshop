@@ -16,7 +16,8 @@
     <div class="left">
       <a href="#home" class="brand" title="DAN25 CLOTHING – Hem">
         <span class="brand-wordmark">
-          <span class="mark">DAN25</span> <span class="rest">CLOTHING</span>
+          <span class="mark">DAN25</span>
+          <span class="rest">CLOTHING</span>
         </span>
       </a>
 
@@ -42,15 +43,26 @@
     </div>
   </header>
 
-  <!-- ===== ANNOUNCEMENT (under header) ===== -->
+  <!-- ===== ANNOUNCEMENT (seamless marquee) ===== -->
   <div class="announcement" role="region" aria-label="Fri frakt-banner">
-    <div class="announcement__track">
-      <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
-      <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
-      <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
-      <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
-      <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
-      <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+    <div class="marquee">
+      <div class="marquee__content">
+        <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
+        <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+        <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
+        <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+        <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
+        <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+      </div>
+      <!-- duplicate for seamless loop -->
+      <div class="marquee__content" aria-hidden="true">
+        <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
+        <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+        <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
+        <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+        <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
+        <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+      </div>
     </div>
   </div>
 
@@ -65,4 +77,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-  
