@@ -18,7 +18,7 @@ body {
 header {
   position: sticky;
   top: 0;
-  background: rgba(17,17,17,0.8);
+  background: rgba(17,17,17,0.9);
   backdrop-filter: blur(8px);
   padding: 30px 50px;
   display: flex;
@@ -28,23 +28,24 @@ header {
   z-index: 10;
 }
 header h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem;
+  font-family: 'Transcity', sans-serif;
+  font-size: 2.4rem;
   color: var(--accent);
   letter-spacing: 2px;
 }
 .actions {
   display: flex;
   gap: 16px;
+  align-items: center;
 }
-.searchbar input, .select {
+.select {
   padding: 8px 12px;
   border-radius: var(--radius);
   border: 1px solid var(--muted);
   background: #1a1a1a;
   color: var(--text);
 }
-.searchbar input:focus, .select:focus {
+.select:focus {
   outline: none;
   border-color: var(--accent);
 }
@@ -111,11 +112,12 @@ button:hover {
 /* ===== Varukorgs-badge ===== */
 .cart-btn {
   position: relative;
+  font-size: 1.4rem;
 }
 .badge {
   position: absolute;
   top: -6px;
-  right: -6px;
+  right: -10px;
   background: var(--accent);
   color: var(--bg);
   font-size: 12px;
