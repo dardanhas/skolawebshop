@@ -2,18 +2,18 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Min Webshop</title>
 
-  <!-- Rund, “levande” logotypkänsla -->
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Typsnitt: rund rubrik + modern brödtext -->
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Header -->
+  <!-- ===== Header ===== -->
   <header>
-    <h1 class="logo-text">Min Webshop</h1>
+    <h1 class="logo-bubble">Min Webshop</h1>
 
     <div class="actions">
       <select id="sortSelect" class="select" aria-label="Sortera">
@@ -29,11 +29,26 @@
     </div>
   </header>
 
-  <!-- Produkter -->
+  <!-- Osynligt SVG-filter som ger “gel/glossy”-känsla till loggan -->
+  <svg width="0" height="0" style="position:absolute;">
+    <defs>
+      <filter id="gelSpec" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur" />
+        <feSpecularLighting in="blur" surfaceScale="5" specularConstant="0.6" specularExponent="25" lighting-color="#ffffff" result="spec">
+          <fePointLight x="-100" y="-200" z="200"/>
+        </feSpecularLighting>
+        <feComposite in="spec" in2="SourceGraphic" operator="in" result="specOut"/>
+        <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- ===== Innehåll ===== -->
   <main class="container">
     <div id="productGrid" class="grid"></div>
   </main>
 
+  <!-- ===== Footer ===== -->
   <footer>
     © <span id="year"></span> Min Webshop
   </footer>
