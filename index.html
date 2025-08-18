@@ -12,6 +12,51 @@
 <body>
   <!-- ===== Header ===== -->
   <header>
+    <header>
+  <!-- Vänstergrupp: logga + meny, på samma baslinje -->
+  <div class="left">
+    <a href="#home" class="brand" title="DAN25 CLOTHING – Home">
+      <span class="brand-wordmark">
+        <span class="mark">DAN25</span> <span class="rest">CLOTHING</span>
+      </span>
+    </a>
+
+    <nav class="main-nav">
+      <a href="#home">Hem</a>
+      <a href="#home" data-link="shop">Butik</a>
+      <a href="#about">Om Oss</a>
+      <a href="#contact">Kontakt</a>
+    </nav>
+  </div>
+
+  <div class="actions">
+    <select id="sortSelect" class="select" aria-label="Sortera" hidden>
+      <option value="">Sortera</option>
+      <option value="price-asc">Billigast först</option>
+      <option value="price-desc">Dyrast först</option>
+      <option value="name-asc">Namn A–Ö</option>
+    </select>
+
+    <button class="cart-btn" type="button" title="Varukorg">
+      🛒 <span id="cartCount" class="badge">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- Rullande rad mellan header och hero -->
+<div class="announcement" role="region" aria-label="Fri frakt-banner">
+  <div class="announcement__track">
+    <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
+    <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+    <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
+    <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+    <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
+    <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+    <span>FRI FRAKT VID KÖP ÖVER 499kr</span>
+    <span class="accent">FRI FRAKT VID KÖP ÖVER 499kr</span>
+  </div>
+</div>
+    
     <!-- Klickbar wordmark -> Hem -->
     <a href="#home" class="brand" title="DAN25 CLOTHING. – Hem">
       <span class="brand-wordmark">
