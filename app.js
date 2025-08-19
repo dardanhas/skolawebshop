@@ -227,7 +227,7 @@ function viewContact() {
   appRoot().innerHTML = `
     <section class="container fade-in">
       <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Kontakt</h2>
-      <p style="color:var(--muted)">Mail: support@dan25clothing.se · Tel: 010-123 45 67</p>
+      <p style="color:var(--muted)">Mail: xx · Tel: xx</p>
       <p style="color:var(--muted)">Öppettider: Vardagar 09–17</p>
     </section>
   `;
