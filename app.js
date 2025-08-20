@@ -1,5 +1,5 @@
 /* =========================================
-   DAN25 CLOTHING — SPA m. snabblägg + checkout (demo)
+   DAN25 CLOTHING — SPA m. snabblägg + checkout (SVG-cart)
    ========================================= */
 
 /* ----- Currency formatter ----- */
@@ -7,7 +7,7 @@ const fmt = new Intl.NumberFormat("sv-SE", { style: "currency", currency: "SEK" 
 
 /* ----- Product catalog ----- */
 const PRODUCTS = [
- { id: "p1", name: "Hoodie",       price: 549,  img: "images/hoodie.jpg",      sizes: ["XS","S","M","L","XL"] },
+  { id: "p1", name: "Hoodie",       price: 549,  img: "images/hoodie.jpg",      sizes: ["XS","S","M","L","XL"] },
   { id: "p2", name: "Svarta Jeans",   price: 899,  img: "images/jeans.jpg",       sizes: ["28","30","32","34","36"] },
   { id: "p3", name: "Vit T-shirt",   price: 299,  img: "images/tshirt.jpg",      sizes: ["XS","S","M","L","XL"] },
   { id: "p4", name: "Svart T-shirt", price: 299, img: "images/svarttshirt.jpg", sizes: ["XS","S","M","L","XL"] },
@@ -22,9 +22,8 @@ const PRODUCTS = [
 const CART_KEY = "dan25:cart";
 const FAV_KEY  = "dan25:favs";
 
-let cart = {}; // { id: qty }
+let cart = {};
 try { cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}"); } catch(_) { cart = {}; }
-
 let favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]"));
 
 /* ----- Helpers ----- */
@@ -59,6 +58,52 @@ function getSubtotal(){
   }, 0);
 }
 function getShipping(subtotal){ return subtotal >= 499 ? 0 : 49; }
+
+/* SVG icon for quick-add cart (inherits currentColor) */
+function cartSVG(){
+  return `
+<svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+  <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2Zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2ZM7.16 14h9.69c.83 0 1.56-.5 1.87-1.26l2.66-6.22A1 1 0 0 0 20.47 5H6.21L5.27 3H2v2h2l3.6 7.59-.94 2.03A2 2 0 0 0 6.6 17H19v-2H7.42l.74-1.6Z"/>
+</svg>`;
+}
+
+/* Fly-to-cart animation */
+function flyToCart(imgEl){
+  const cartBtn = document.querySelector('.cart-btn');
+  if (!imgEl || !cartBtn) return;
+
+  const imgRect  = imgEl.getBoundingClientRect();
+  const cartRect = cartBtn.getBoundingClientRect();
+
+  const clone = imgEl.cloneNode(true);
+  Object.assign(clone.style, {
+    position: 'fixed',
+    zIndex: 9999,
+    top:  imgRect.top  + 'px',
+    left: imgRect.left + 'px',
+    width:  imgRect.width  + 'px',
+    height: imgRect.height + 'px',
+    borderRadius: '8px',
+    boxShadow: '0 8px 24px rgba(0,0,0,.35)',
+    pointerEvents: 'none',
+    transition: 'transform 0.8s cubic-bezier(0.22,0.61,0.36,1), opacity 0.8s ease'
+  });
+  document.body.appendChild(clone);
+
+  const dx = (cartRect.left + cartRect.width/2)  - (imgRect.left + imgRect.width/2);
+  const dy = (cartRect.top  + cartRect.height/2) - (imgRect.top  + imgRect.height/2);
+
+  // kick off transition
+  clone.getBoundingClientRect();
+  clone.style.transform = `translate(${dx}px, ${dy}px) scale(0.2)`;
+  clone.style.opacity = '0.4';
+
+  clone.addEventListener('transitionend', () => {
+    clone.remove();
+    cartBtn.classList.add('cart-bounce');
+    setTimeout(()=> cartBtn.classList.remove('cart-bounce'), 500);
+  }, { once: true });
+}
 
 /* =========================================
    Views
@@ -96,15 +141,17 @@ function viewHome(){
 }
 
 /* Produktgrid */
+let currentProducts = PRODUCTS.slice();
+
 function renderProducts(){
   const grid = $("#productGrid");
   if (!grid) return;
   grid.innerHTML = "";
 
   currentProducts.forEach(p=>{
-    const favActive = isFav(p.id);
-    const favIcon   = favActive ? "♥" : "♡";
-    const ariaPressed = favActive ? "true" : "false";
+    const favActive  = isFav(p.id);
+    const favIcon    = favActive ? "♥" : "♡";
+    const ariaPressed= favActive ? "true" : "false";
 
     const card = document.createElement("article");
     card.className = "card fade-in";
@@ -117,7 +164,7 @@ function renderProducts(){
       <button class="fav-btn${favActive ? " active" : ""}" aria-pressed="${ariaPressed}" aria-label="Spara som favorit" data-id="${p.id}">${favIcon}</button>
 
       <!-- Snabb-lägg i varukorg -->
-      <button class="quick-add" aria-label="Lägg i varukorgen" title="Lägg i varukorgen" data-id="${p.id}">+</button>
+      <button class="quick-add" aria-label="Lägg i varukorgen" title="Lägg i varukorgen" data-id="${p.id}">${cartSVG()}</button>
 
       <div class="media">
         <img src="${safeSrc(p)}" alt="${p.name}" loading="lazy"
@@ -145,11 +192,12 @@ function renderProducts(){
       favBtn.textContent = active ? "♥" : "♡";
     });
 
-    // snabblägg
+    // snabblägg med fly-to-cart
     const qa = card.querySelector(".quick-add");
     qa.addEventListener("click", (e)=>{
       e.stopPropagation();
       addToCart(p.id, 1);
+      flyToCart(card.querySelector(".media img"));
       qa.classList.add("pulse");
       setTimeout(()=>qa.classList.remove("pulse"), 280);
     });
@@ -333,7 +381,7 @@ function viewCheckout(){
     if (e.target.matches("[data-inc]")) {
       setQty(id, (cart[id]||1)+1);
       row.querySelector(".qty-input").value = cart[id];
-      viewCheckout(); // re-render totals
+      viewCheckout();
     } else if (e.target.matches("[data-dec]")) {
       setQty(id, (cart[id]||1)-1);
       if (!cart[id]) row.remove();
@@ -367,7 +415,7 @@ function viewCheckout(){
     appRoot().innerHTML = `
       <section class="container fade-in" style="text-align:center;max-width:720px">
         <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Tack för din beställning!</h2>
-        <p class="muted">Du får ett bekräftelsemejl inom kort (demo-text). </p>
+        <p class="muted">Du får ett bekräftelsemejl inom kort (demo-text).</p>
         <p style="margin-top:20px"><a class="btn" href="#home">Tillbaka till butiken</a></p>
       </section>
     `;
@@ -401,7 +449,6 @@ function viewContact(){
 }
 
 /* ---- Sortering ---- */
-let currentProducts = PRODUCTS.slice();
 function sortProducts(type){
   if(type === "price-asc")      currentProducts.sort((a,b)=> a.price-b.price);
   else if(type === "price-desc")currentProducts.sort((a,b)=> b.price-a.price);
