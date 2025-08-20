@@ -376,3 +376,88 @@ footer{
   .brand-wordmark{ font-size: clamp(.9rem, 5.5vw, 1.3rem); }
   .main-nav{ gap: 12px; }
 }
+
+/* === Quick add (på kortet) === */
+.quick-add{
+  position:absolute; right:10px; bottom:10px;
+  width:38px; height:38px; border-radius:999px;
+  display:grid; place-items:center;
+  font-size:20px; line-height:1; font-weight:700;
+  color:#111; background:var(--accent);
+  border:1px solid var(--accent);
+  box-shadow: 0 8px 18px rgba(0,0,0,.28);
+  transition: transform .15s ease, filter .2s ease;
+  z-index:5;
+}
+.quick-add:hover{ transform:translateY(-1px); filter:saturate(1.1) }
+.quick-add.pulse{ transform:scale(1.1); }
+
+/* === Checkout === */
+.checkout-grid{
+  display:grid; gap:28px;
+  grid-template-columns: 1.1fr 1fr;
+}
+.order-col{ min-width:0; }
+.cart-list{ list-style:none; display:grid; gap:12px; }
+.cart-row{
+  display:grid;
+  grid-template-columns: 72px 1fr auto auto;
+  align-items:center;
+  gap:12px;
+  background:var(--panel);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius);
+  padding:8px;
+}
+.cart-thumb{ width:72px; height:72px; object-fit:cover; border-radius:8px; }
+.cart-meta{ display:flex; flex-direction:column; gap:4px; }
+.cart-name{ font-weight:700; }
+.cart-price{ color:var(--muted); }
+
+.qty-controls{ display:flex; align-items:center; gap:6px; }
+.qty-btn{
+  width:30px; height:30px; border-radius:8px;
+  border:1px solid rgba(255,255,255,.18);
+  background:#151515; color:#fff; cursor:pointer;
+}
+.qty-input{
+  width:56px; padding:6px 8px; border-radius:8px;
+  border:1px solid rgba(255,255,255,.18);
+  background:#111; color:#fff; text-align:center;
+}
+.remove{
+  margin-left:8px; width:30px; height:30px; border-radius:8px;
+  border:1px solid rgba(255,255,255,.18);
+  background:#151515; color:#fff; cursor:pointer;
+}
+
+.summary{
+  margin-top:16px; background:#141414; border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius); padding:14px 16px; display:grid; gap:8px;
+}
+.summary > div{ display:flex; justify-content:space-between; }
+.summary hr{ border:none; border-top:1px solid rgba(255,255,255,.08); margin:6px 0; }
+.summary .total{ font-weight:800; font-size:1.1rem; }
+
+.checkout-form{
+  background:#151515; border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius); padding:16px;
+}
+.checkout-form h3{ margin-bottom:10px; }
+.form-grid{
+  display:grid; gap:12px; grid-template-columns: 1fr 1fr;
+}
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field.wide{ grid-column: 1/-1; }
+.field input, .field select{
+  padding:10px 12px; border-radius:var(--radius);
+  border:1px solid rgba(255,255,255,.18);
+  background:#111; color:#fff;
+}
+.btn.full{ width:100%; text-align:center; margin-top:10px; }
+.muted{ color:var(--muted); }
+
+/* Mobil: stapla checkout */
+@media (max-width: 900px){
+  .checkout-grid{ grid-template-columns: 1fr; }
+}
