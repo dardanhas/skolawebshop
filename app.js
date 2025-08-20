@@ -113,8 +113,9 @@ function viewHome(){
         <h2 class="hero-title">BACK TO THE BASICS</h2>
         <p class="hero-sub">Jeans, t-shirts och tidlösa plagg.</p>
         <div class="hero-cta">
-          <a href="#home" class="btn-pill">DAM</a>
+          <a href="#home" class="btn-pill"outline >DAM</a>
           <a href="#home" class="btn-pill outline">HERR</a>
+ <a href="#home" class="btn-pill outline">UNISEX</a>
         </div>
       </div>
     </section>
