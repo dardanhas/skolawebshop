@@ -1,13 +1,13 @@
 /* =========================================
-   DAN25 CLOTHING — SPA m. snabblägg + checkout (SVG-cart)
+   DAN25 CLOTHING — SPA m. quick-add (SVG) + fly-to-cart + checkout (demo)
    ========================================= */
 
-/* ----- Currency formatter ----- */
+/* Currency */
 const fmt = new Intl.NumberFormat("sv-SE", { style: "currency", currency: "SEK" });
 
-/* ----- Product catalog ----- */
+/* Products */
 const PRODUCTS = [
-  { id: "p1", name: "Hoodie",       price: 549,  img: "images/hoodie.jpg",      sizes: ["XS","S","M","L","XL"] },
+ { id: "p1", name: "Hoodie",       price: 549,  img: "images/hoodie.jpg",      sizes: ["XS","S","M","L","XL"] },
   { id: "p2", name: "Svarta Jeans",   price: 899,  img: "images/jeans.jpg",       sizes: ["28","30","32","34","36"] },
   { id: "p3", name: "Vit T-shirt",   price: 299,  img: "images/tshirt.jpg",      sizes: ["XS","S","M","L","XL"] },
   { id: "p4", name: "Svart T-shirt", price: 299, img: "images/svarttshirt.jpg", sizes: ["XS","S","M","L","XL"] },
@@ -18,15 +18,14 @@ const PRODUCTS = [
   { id: "p9", name: "Kappa",          price: 2799, img: "images/coat.jpg",        sizes: ["XS","S","M","L"] },
 ];
 
-/* ----- State ----- */
+/* State */
 const CART_KEY = "dan25:cart";
 const FAV_KEY  = "dan25:favs";
-
 let cart = {};
 try { cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}"); } catch(_) { cart = {}; }
 let favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]"));
 
-/* ----- Helpers ----- */
+/* Helpers */
 const $ = (sel, root=document) => root.querySelector(sel);
 const appRoot = () => document.getElementById("app");
 const safeSrc = (p) => p.img.split("/").map(encodeURIComponent).join("/");
@@ -36,7 +35,6 @@ function toggleFav(id){
   favs.has(id) ? favs.delete(id) : favs.add(id);
   localStorage.setItem(FAV_KEY, JSON.stringify([...favs]));
 }
-
 function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
 function updateCartBadge(){
   const count = Object.values(cart).reduce((a,b)=>a+b,0);
@@ -59,7 +57,7 @@ function getSubtotal(){
 }
 function getShipping(subtotal){ return subtotal >= 499 ? 0 : 49; }
 
-/* SVG icon for quick-add cart (inherits currentColor) */
+/* SVG icon (kundvagn) */
 function cartSVG(){
   return `
 <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -93,7 +91,7 @@ function flyToCart(imgEl){
   const dx = (cartRect.left + cartRect.width/2)  - (imgRect.left + imgRect.width/2);
   const dy = (cartRect.top  + cartRect.height/2) - (imgRect.top  + imgRect.height/2);
 
-  // kick off transition
+  // start transition
   clone.getBoundingClientRect();
   clone.style.transform = `translate(${dx}px, ${dy}px) scale(0.2)`;
   clone.style.opacity = '0.4';
@@ -108,7 +106,6 @@ function flyToCart(imgEl){
 /* =========================================
    Views
    ========================================= */
-
 function viewHome(){
   appRoot().innerHTML = `
     <section class="hero">
@@ -192,7 +189,7 @@ function renderProducts(){
       favBtn.textContent = active ? "♥" : "♡";
     });
 
-    // snabblägg med fly-to-cart
+    // quick-add med flyg-animation
     const qa = card.querySelector(".quick-add");
     qa.addEventListener("click", (e)=>{
       e.stopPropagation();
@@ -402,7 +399,7 @@ function viewCheckout(){
     }
   });
 
-  // form submit (demo)
+  // submit (demo)
   $("#checkoutForm")?.addEventListener("submit", (e)=>{
     e.preventDefault();
     const form = e.currentTarget;
@@ -410,7 +407,6 @@ function viewCheckout(){
       form.reportValidity();
       return;
     }
-    // Demo: töm varukorg och visa tack
     cart = {}; saveCart(); updateCartBadge();
     appRoot().innerHTML = `
       <section class="container fade-in" style="text-align:center;max-width:720px">
@@ -424,7 +420,7 @@ function viewCheckout(){
   const sort = $("#sortSelect"); if (sort) sort.hidden = true;
 }
 
-/* ---- Statiska sidor ---- */
+/* Static pages */
 function viewAbout(){
   appRoot().innerHTML = `
     <section class="container fade-in">
@@ -448,7 +444,7 @@ function viewContact(){
   const sort = $("#sortSelect"); if (sort) sort.hidden = true;
 }
 
-/* ---- Sortering ---- */
+/* Sorting */
 function sortProducts(type){
   if(type === "price-asc")      currentProducts.sort((a,b)=> a.price-b.price);
   else if(type === "price-desc")currentProducts.sort((a,b)=> b.price-a.price);
@@ -457,9 +453,7 @@ function sortProducts(type){
   renderProducts();
 }
 
-/* =========================================
-   Mobile nav + Router & Init
-   ========================================= */
+/* Mobile nav + Router & Init */
 function setupMobileNav(){
   const toggle = document.querySelector(".nav-toggle");
   const nav    = document.querySelector(".main-nav");
@@ -473,7 +467,6 @@ function setupMobileNav(){
   window.addEventListener("keydown", e=>{ if (e.key==="Escape") close(); });
   window.addEventListener("resize", ()=>{ if (innerWidth>640) close(); });
 }
-
 function setupCartButton(){
   document.querySelector(".cart-btn")?.addEventListener("click", ()=>{
     navigateTo("#checkout");
@@ -481,12 +474,10 @@ function setupCartButton(){
 }
 
 function navigateTo(hash){ location.hash === hash ? router() : (location.hash = hash); }
-
 function router(){
   const h = location.hash || "#home";
   const m = h.match(/^#product[\/-]([^/?#]+)$/);
   if (m){ viewProduct(m[1]); return; }
-
   switch(h){
     case "#about":    return viewAbout();
     case "#contact":  return viewContact();
