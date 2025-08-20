@@ -40,8 +40,6 @@ header{
   backdrop-filter: blur(8px);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
-
-/* Brand (DAN25 över CLOTHING) */
 .brand{ text-decoration:none; align-self:end; justify-self:start; }
 .brand-wordmark{
   font-family:'Cormorant', serif;
@@ -49,13 +47,12 @@ header{
   letter-spacing:.18em;
   text-transform:uppercase;
   color:#fff;
-  font-size:clamp(0.95rem, 2.1vw, 1.9rem); /* normal storlek */
+  font-size:clamp(0.95rem, 2.1vw, 1.9rem);
   line-height:1.02;
 }
 .brand-wordmark .mark{ color:var(--accent); display:block; }
 .brand-wordmark .rest{ display:block; margin-top:.06rem; }
 
-/* Main nav (centrerad) */
 .main-nav{
   grid-column: 2;
   justify-self: center;
@@ -76,7 +73,6 @@ header{
 }
 .main-nav a:hover{ background:rgba(255,255,255,.06); opacity:1 }
 
-/* Header actions */
 .actions{
   grid-column: 3;
   justify-self: end;
@@ -100,7 +96,7 @@ header{
 }
 
 /* ==============================
-   ANNOUNCEMENT (seamless, slim)
+   ANNOUNCEMENT
    ============================== */
 .announcement{
   background:#0f0f0f;
@@ -115,7 +111,7 @@ header{
 .marquee__content{
   display:flex;
   gap:var(--marquee-gap);
-  padding:6px 0;                     /* smal rad */
+  padding:6px 0;
   white-space:nowrap;
   padding-inline-end: var(--marquee-gap);
 }
@@ -178,7 +174,7 @@ header{
 @keyframes fadeInUp{ from{opacity:0; transform:translateY(40px)} to{opacity:1; transform:translateY(0)} }
 
 /* ==============================
-   PRODUCT GRID (+ favorites)
+   PRODUCT GRID
    ============================== */
 .container{ padding:56px 40px; max-width:1200px; margin-inline:auto; }
 .grid{
@@ -215,11 +211,22 @@ header{
   z-index: 5;
 }
 .fav-btn:hover{ transform:scale(1.06); }
-.fav-btn.active{
-  background:var(--accent);
-  color:#111;
-  border-color:var(--accent);
+.fav-btn.active{ background:var(--accent); color:#111; border-color:var(--accent); }
+
+/* Quick add (kundvagns-ikon på kortet) */
+.quick-add{
+  position:absolute; right:10px; bottom:10px;
+  width:38px; height:38px; border-radius:999px;
+  display:grid; place-items:center;
+  font-size:18px; line-height:1; font-weight:700;
+  color:#111; background:var(--accent);
+  border:1px solid var(--accent);
+  box-shadow: 0 8px 18px rgba(0,0,0,.28);
+  transition: transform .15s ease, filter .2s ease;
+  z-index:5;
 }
+.quick-add:hover{ transform:translateY(-1px); filter:saturate(1.1) }
+.quick-add.pulse{ transform:scale(1.1); }
 
 /* ==============================
    PRODUCT DETAIL
@@ -229,10 +236,7 @@ header{
 .breadcrumbs a{ color:var(--text); text-decoration:none; opacity:.9 }
 .breadcrumbs a:hover{ text-decoration:underline; }
 
-.product-grid{
-  display:grid; gap:32px;
-  grid-template-columns: 1.1fr 1fr;
-}
+.product-grid{ display:grid; gap:32px; grid-template-columns: 1.1fr 1fr; }
 .product-gallery{
   background:#0f0f0f; border-radius:var(--radius); overflow:hidden;
   box-shadow: 0 8px 18px rgba(0,0,0,.25);
@@ -274,129 +278,9 @@ label{ font-weight:600; }
 .btn:active{ transform:translateY(0) }
 
 /* ==============================
-   FOOTER / UTILS
+   CHECKOUT
    ============================== */
-footer{
-  border-top:1px solid rgba(255,255,255,.08);
-  text-align:center; padding:26px; color:#cfcfcf;
-}
-.fade-in{ animation:fadeIn .8s ease both; }
-@keyframes fadeIn{ from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:translateY(0)} }
-
-/* ==============================
-   RESPONSIVE + MOBILMENY
-   ============================== */
-
-/* Produktdetalj staplas tidigare */
-@media (max-width: 900px){
-  .product-grid{ grid-template-columns: 1fr; }
-  .product-gallery{ max-height: 420px; }
-}
-
-/* Tablet: två rader, nav under brand/actions */
-@media (max-width: 820px){
-  header{
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "brand actions"
-      "nav nav";
-    row-gap: 8px;
-    align-items: center;
-  }
-  .brand{ grid-area: brand; }
-  .main-nav{
-    grid-area: nav;
-    justify-self: center;
-    align-self: center;
-    flex-wrap: wrap;
-    gap: 14px 18px;
-  }
-  .actions{ grid-area: actions; align-self: center; }
-}
-
-/* MOBIL (≤640px): hamburgermeny */
-@media (max-width: 640px){
-  /* Bas-mobil-typografering */
-  .container{ padding: 32px 16px; }
-  .grid{
-    gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  }
-  .media{ height: 220px; }
-  .fav-btn{ width: 32px; height: 32px; font-size: 16px; }
-  .hero{ height: 58vh; }
-  .hero-title{ font-size: clamp(1.4rem, 9vw, 2.4rem); letter-spacing: .06em; }
-  .hero-sub{ font-size: .95rem; }
-  .btn-pill{ padding: .7rem 1rem; }
-  .main-nav a{ font-size: 1rem; padding: 6px 6px; }
-  header{ padding: 10px 16px; }
-
-  /* Toggle-knapp (hamburger) – visas bara på mobil */
-  .nav-toggle{
-    display:grid;
-    width:40px; height:40px; border-radius:10px;
-    border:1px solid rgba(255,255,255,.18);
-    background:var(--panel); color:var(--text);
-    place-items:center; cursor:pointer;
-    position:relative;
-  }
-  .nav-toggle::before, .nav-toggle::after, .nav-toggle span{
-    content:""; position:absolute; left:9px; right:9px; height:2px; background:#fff; transition:.2s ease;
-  }
-  .nav-toggle::before{ top:12px; }
-  .nav-toggle span{ top:19px; }
-  .nav-toggle::after{ top:26px; }
-
-  /* Drawer: göm nav som panel */
-  .main-nav{
-    position: fixed;
-    top: calc(56px); /* ungefärlig headerhöjd på mobil */
-    left:0; right:0;
-    display:flex; flex-direction:column; align-items:center;
-    gap:14px;
-    background: rgba(17,17,17,.98);
-    border-bottom:1px solid rgba(255,255,255,.07);
-    padding:14px 16px 18px;
-    transform: translateY(-12px);
-    opacity:0; pointer-events:none;
-    transition: transform .2s ease, opacity .2s ease;
-  }
-  /* Öppen meny – när body/nav-open är satt via JS */
-  body.nav-open .main-nav{
-    transform:none; opacity:1; pointer-events:auto;
-  }
-  /* Animering till X när öppen */
-  body.nav-open .nav-toggle::before{ transform: translateY(7px) rotate(45deg); }
-  body.nav-open .nav-toggle::after{ transform: translateY(-7px) rotate(-45deg); }
-  body.nav-open .nav-toggle span{ transform: scaleX(0); opacity:0; }
-}
-
-/* Extra litet */
-@media (max-width: 400px){
-  .brand-wordmark{ font-size: clamp(.9rem, 5.5vw, 1.3rem); }
-  .main-nav{ gap: 12px; }
-}
-
-/* === Quick add (på kortet) === */
-.quick-add{
-  position:absolute; right:10px; bottom:10px;
-  width:38px; height:38px; border-radius:999px;
-  display:grid; place-items:center;
-  font-size:20px; line-height:1; font-weight:700;
-  color:#111; background:var(--accent);
-  border:1px solid var(--accent);
-  box-shadow: 0 8px 18px rgba(0,0,0,.28);
-  transition: transform .15s ease, filter .2s ease;
-  z-index:5;
-}
-.quick-add:hover{ transform:translateY(-1px); filter:saturate(1.1) }
-.quick-add.pulse{ transform:scale(1.1); }
-
-/* === Checkout === */
-.checkout-grid{
-  display:grid; gap:28px;
-  grid-template-columns: 1.1fr 1fr;
-}
+.checkout-grid{ display:grid; gap:28px; grid-template-columns: 1.1fr 1fr; }
 .order-col{ min-width:0; }
 .cart-list{ list-style:none; display:grid; gap:12px; }
 .cart-row{
@@ -444,9 +328,7 @@ footer{
   border-radius:var(--radius); padding:16px;
 }
 .checkout-form h3{ margin-bottom:10px; }
-.form-grid{
-  display:grid; gap:12px; grid-template-columns: 1fr 1fr;
-}
+.form-grid{ display:grid; gap:12px; grid-template-columns: 1fr 1fr; }
 .field{ display:flex; flex-direction:column; gap:6px; }
 .field.wide{ grid-column: 1/-1; }
 .field input, .field select{
@@ -457,10 +339,16 @@ footer{
 .btn.full{ width:100%; text-align:center; margin-top:10px; }
 .muted{ color:var(--muted); }
 
-/* Mobil: stapla checkout */
-@media (max-width: 900px){
-  .checkout-grid{ grid-template-columns: 1fr; }
+/* ==============================
+   FOOTER / UTILS
+   ============================== */
+footer{
+  border-top:1px solid rgba(255,255,255,.08);
+  text-align:center; padding:26px; color:#cfcfcf;
 }
+.fade-in{ animation:fadeIn .8s ease both; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:translateY(0)} }
+
 /* Cart bounce when item added */
 .cart-btn.cart-bounce { animation: cartBounce .5s ease; }
 @keyframes cartBounce{
@@ -471,6 +359,86 @@ footer{
   100%{transform:translateY(0)}
 }
 
-/* (valfritt) justera quick-add ikonstorlek lite */
-.quick-add{ font-size: 18px; }
+/* ==============================
+   RESPONSIVE + MOBILMENY
+   ============================== */
+@media (max-width: 900px){
+  .product-grid{ grid-template-columns: 1fr; }
+  .product-gallery{ max-height: 420px; }
+  .checkout-grid{ grid-template-columns: 1fr; }
+}
 
+@media (max-width: 820px){
+  header{
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand actions"
+      "nav nav";
+    row-gap: 8px;
+    align-items: center;
+  }
+  .brand{ grid-area: brand; }
+  .main-nav{
+    grid-area: nav;
+    justify-self: center;
+    align-self: center;
+    flex-wrap: wrap;
+    gap: 14px 18px;
+  }
+  .actions{ grid-area: actions; align-self: center; }
+}
+
+@media (max-width: 640px){
+  .container{ padding: 32px 16px; }
+  .grid{
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .media{ height: 220px; }
+  .fav-btn{ width: 32px; height: 32px; font-size: 16px; }
+  .hero{ height: 58vh; }
+  .hero-title{ font-size: clamp(1.4rem, 9vw, 2.4rem); letter-spacing: .06em; }
+  .hero-sub{ font-size: .95rem; }
+  .btn-pill{ padding: .7rem 1rem; }
+  .main-nav a{ font-size: 1rem; padding: 6px 6px; }
+  header{ padding: 10px 16px; }
+
+  /* Mobil-drawer för nav */
+  .nav-toggle{
+    display:grid;
+    width:40px; height:40px; border-radius:10px;
+    border:1px solid rgba(255,255,255,.18);
+    background:var(--panel); color:var(--text);
+    place-items:center; cursor:pointer; position:relative;
+  }
+  .nav-toggle::before, .nav-toggle::after, .nav-toggle span{
+    content:""; position:absolute; left:9px; right:9px; height:2px; background:#fff; transition:.2s ease;
+  }
+  .nav-toggle::before{ top:12px; }
+  .nav-toggle span{ top:19px; }
+  .nav-toggle::after{ top:26px; }
+
+  .main-nav{
+    position: fixed;
+    top: 56px;
+    left:0; right:0;
+    display:flex; flex-direction:column; align-items:center;
+    gap:14px;
+    background: rgba(17,17,17,.98);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    padding:14px 16px 18px;
+    transform: translateY(-12px);
+    opacity:0; pointer-events:none;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  body.nav-open .main-nav{ transform:none; opacity:1; pointer-events:auto; }
+
+  body.nav-open .nav-toggle::before{ transform: translateY(7px) rotate(45deg); }
+  body.nav-open .nav-toggle::after{ transform: translateY(-7px) rotate(-45deg); }
+  body.nav-open .nav-toggle span{ transform: scaleX(0); opacity:0; }
+}
+
+@media (max-width: 400px){
+  .brand-wordmark{ font-size: clamp(.9rem, 5.5vw, 1.3rem); }
+  .main-nav{ gap: 12px; }
+}
