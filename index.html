@@ -6,15 +6,14 @@
   <title>DAN25 CLOTHING</title>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@700&family=Cinzel:wght@800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@700&family=Cinzel:wght@800&family=Inter:wght@400;600;800&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- ===== HEADER (brand | centered nav | actions) ===== -->
+  <!-- ===== HEADER ===== -->
   <header>
-    <!-- Brand (vänster) -->
+    <!-- Brand -->
     <a href="#home" class="brand" title="DAN25 CLOTHING – Hem">
       <span class="brand-wordmark">
         <span class="mark">DAN25</span>
@@ -22,7 +21,7 @@
       </span>
     </a>
 
-    <!-- Nav (MITTEN AV SIDAN) -->
+    <!-- Nav (centrerad) -->
     <nav class="main-nav">
       <a href="#home">Hem</a>
       <a href="#home" data-link="shop">Butik</a>
@@ -30,9 +29,9 @@
       <a href="#contact">Kontakt</a>
     </nav>
 
-    <!-- Actions (höger) -->
+    <!-- Actions -->
     <div class="actions">
-      <!-- Mobil: hamburgermeny (visas bara ≤640px) -->
+      <!-- Mobil-hamburger (visas ≤640px) -->
       <button class="nav-toggle" aria-expanded="false" aria-label="Meny">
         <span aria-hidden="true"></span>
       </button>
@@ -44,13 +43,11 @@
         <option value="name-asc">Namn A–Ö</option>
       </select>
 
-      <button class="cart-btn" type="button" title="Varukorg">
-        🛒 <span id="cartCount" class="badge">0</span>
-      </button>
+      <button class="cart-btn" type="button" title="Varukorg">🛒 <span id="cartCount" class="badge">0</span></button>
     </div>
   </header>
 
-  <!-- ===== ANNOUNCEMENT (seamless marquee) ===== -->
+  <!-- ===== ANNOUNCEMENT ===== -->
   <div class="announcement" role="region" aria-label="Fri frakt-banner">
     <div class="marquee">
       <div class="marquee__content">
@@ -80,7 +77,7 @@
     © <span id="year"></span> DAN25 CLOTHING
   </footer>
 
-  <!-- JavaScript app -->
-  <script src="./app.js" defer></script>
+  <!-- JavaScript app (cache-bust) -->
+  <script src="./app.js?v=3" defer></script>
 </body>
 </html>
