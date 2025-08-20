@@ -314,6 +314,17 @@ function viewCheckout(){
             <hr/>
             <div class="total"><span>Totalt</span><span>${fmt.format(total)}</span></div>
             <p class="muted" style="margin-top:6px">Fri frakt vid köp över 499 kr.</p>
+            <p class="muted" style="margin-top:4px">
+              15% rabatt med kod:
+              <button type="button"
+                      class="copy-code"
+                      data-code="15OFF"
+                      title="Kopiera rabattkod"
+                      style="background:none;border:none;padding:0;margin:0;cursor:pointer;text-decoration:underline;font:inherit">
+                15OFF
+              </button>
+              <span>*Endast giltig under augusti 2025*</span>
+            </p>
           </div>
           ` : `
           <p class="muted">Din varukorg är tom.</p>
@@ -416,6 +427,23 @@ function viewCheckout(){
         <p style="margin-top:20px"><a class="btn" href="#home">Tillbaka till butiken</a></p>
       </section>
     `;
+  });
+
+  // Kopiera rabattkod 15OFF med ett klick (ingen animation)
+  document.querySelector('.copy-code')?.addEventListener('click', (e) => {
+    const btn  = e.currentTarget;
+    const code = btn.getAttribute('data-code') || '15OFF';
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(code);
+    } else {
+      const t = document.createElement('textarea');
+      t.value = code; document.body.appendChild(t);
+      t.select(); document.execCommand('copy'); t.remove();
+    }
+    // Diskret textfeedback
+    const orig = btn.textContent;
+    btn.textContent = code + ' – kopierad';
+    setTimeout(() => { btn.textContent = orig; }, 1200);
   });
 
   const sort = $("#sortSelect"); if (sort) sort.hidden = true;
