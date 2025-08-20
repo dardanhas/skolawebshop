@@ -461,3 +461,16 @@ footer{
 @media (max-width: 900px){
   .checkout-grid{ grid-template-columns: 1fr; }
 }
+/* Cart bounce when item added */
+.cart-btn.cart-bounce { animation: cartBounce .5s ease; }
+@keyframes cartBounce{
+  0%{transform:translateY(0)}
+  30%{transform:translateY(-4px)}
+  60%{transform:translateY(0)}
+  85%{transform:translateY(-2px)}
+  100%{transform:translateY(0)}
+}
+
+/* (valfritt) justera quick-add ikonstorlek lite */
+.quick-add{ font-size: 18px; }
+
