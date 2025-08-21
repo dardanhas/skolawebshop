@@ -123,15 +123,14 @@ header{
 .marquee__content .accent{ color:var(--accent); }
 @keyframes marquee{ from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
-/* ===== Coupon bar (15OFF — äggvit, ~25% mindre) ===== */
+/* ===== Coupon bar (stillastående, äggvit) ===== */
 .coupon-bar{
-  background:#f5efe3;      /* äggvit/beige */
+  background:#f5efe3; /* äggvit/beige */
   color:#111;
   text-align:center;
   font-weight:700;
   letter-spacing:.02em;
-  padding:6px 9px;         /* var 8px 12px – lägre rad */
-  font-size:0.75rem;       /* mindre text ~25% */
+  padding:8px 12px;
   border-bottom:1px solid rgba(0,0,0,.08);
 }
 .coupon-bar .copy-code{
@@ -141,7 +140,7 @@ header{
   cursor:pointer;
   color:#111;
   text-decoration:underline;
-  font:inherit;            /* matchar storleken ovan */
+  font:inherit;
 }
 .coupon-bar .copy-code:focus{
   outline:2px dashed #111;
@@ -152,8 +151,6 @@ header{
   font-weight:500;
   margin-left:6px;
   letter-spacing:0;
-}
-
 }
 
 /* ==============================
