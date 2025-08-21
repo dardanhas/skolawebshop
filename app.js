@@ -1,5 +1,5 @@
 /* =========================================
-   DAN25 CLOTHING — SPA m. quick-add (SVG) + fly-to-cart + checkout (demo)
+   DAN25 CLOTHING — SPA m. quick-add + checkout (demo)
    ========================================= */
 
 /* Currency */
@@ -7,16 +7,39 @@ const fmt = new Intl.NumberFormat("sv-SE", { style: "currency", currency: "SEK" 
 
 /* Products */
 const PRODUCTS = [
- { id: "p1", name: "Hoodie",       price: 549,  img: "images/hoodie.jpg",      sizes: ["XS","S","M","L","XL"] },
+  { id: "p1", name: "Hoodie",         price: 549,  img: "images/hoodie.jpg",      sizes: ["XS","S","M","L","XL"] },
   { id: "p2", name: "Svarta Jeans",   price: 899,  img: "images/jeans.jpg",       sizes: ["28","30","32","34","36"] },
-  { id: "p3", name: "Vit T-shirt",   price: 299,  img: "images/tshirt.jpg",      sizes: ["XS","S","M","L","XL"] },
-  { id: "p4", name: "Svart T-shirt", price: 299, img: "images/svarttshirt.jpg", sizes: ["XS","S","M","L","XL"] },
-  { id: "p5", name: "Vinterjacka",   price: 3499, img: "images/vinterjacka.jpg", sizes: ["XS","S","M","L"] },
-  { id: "p6", name: "Sneakers Adidas",      price: 1299, img: "images/sneakers.jpg",    sizes: ["39","40","41","42","43","44"] },
-  { id: "p7", name: "Tröja",         price: 679,  img: "images/troja.jpg",       sizes: ["XS","S","M","L","XL"] },  // <-- troja.jpg
-  { id: "p8", name: "Keps TNF",          price: 329,  img: "images/keps.jpg",        sizes: ["One Size"] },
+  { id: "p3", name: "Vit T-shirt",    price: 299,  img: "images/tshirt.jpg",      sizes: ["XS","S","M","L","XL"] },
+  { id: "p4", name: "Svart T-shirt",  price: 299,  img: "images/svarttshirt.jpg", sizes: ["XS","S","M","L","XL"] },
+  { id: "p5", name: "Vinterjacka",    price: 3499, img: "images/vinterjacka.jpg", sizes: ["XS","S","M","L"] },
+  { id: "p6", name: "Sneakers Adidas",price: 1299, img: "images/sneakers.jpg",    sizes: ["39","40","41","42","43","44"] },
+  { id: "p7", name: "Tröja",          price: 679,  img: "images/troja.jpg",       sizes: ["XS","S","M","L","XL"] },
+  { id: "p8", name: "Keps TNF",       price: 329,  img: "images/keps.jpg",        sizes: ["One Size"] },
   { id: "p9", name: "Kappa",          price: 2799, img: "images/coat.jpg",        sizes: ["XS","S","M","L"] },
 ];
+
+/* === Rabattkod === */
+const COUPON_CODE = "15OFF";
+const COUPON_PCT  = 0.15;
+const COUPON_KEY  = "dan25:coupon";
+/** Giltig endast under augusti 2025 (som i budskapet) */
+function isCouponValidNow(){
+  const d = new Date();
+  return d.getFullYear() === 2025 && d.getMonth() === 7; // 0-index: 7 = augusti
+}
+function getAppliedCoupon(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(COUPON_KEY) || "null");
+    if (saved && saved.code === COUPON_CODE && isCouponValidNow()) return saved;
+  }catch(_){}
+  return null;
+}
+function setAppliedCoupon(code){
+  localStorage.setItem(COUPON_KEY, JSON.stringify({code}));
+}
+function clearAppliedCoupon(){
+  localStorage.removeItem(COUPON_KEY);
+}
 
 /* State */
 const CART_KEY = "dan25:cart";
@@ -34,12 +57,17 @@ const isFav = (id) => favs.has(id);
 function toggleFav(id){
   favs.has(id) ? favs.delete(id) : favs.add(id);
   localStorage.setItem(FAV_KEY, JSON.stringify([...favs]));
+  updateFavBadge();
 }
 function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
 function updateCartBadge(){
   const count = Object.values(cart).reduce((a,b)=>a+b,0);
   const badge = $("#cartCount");
   if (badge) badge.textContent = String(count);
+}
+function updateFavBadge(){
+  const badge = $("#favCount");
+  if (badge) badge.textContent = String(favs.size);
 }
 function addToCart(id, qty=1){
   cart[id] = (cart[id]||0) + qty;
@@ -91,7 +119,6 @@ function flyToCart(imgEl){
   const dx = (cartRect.left + cartRect.width/2)  - (imgRect.left + imgRect.width/2);
   const dy = (cartRect.top  + cartRect.height/2) - (imgRect.top  + imgRect.height/2);
 
-  // start transition
   clone.getBoundingClientRect();
   clone.style.transform = `translate(${dx}px, ${dy}px) scale(0.2)`;
   clone.style.opacity = '0.4';
@@ -113,9 +140,9 @@ function viewHome(){
         <h2 class="hero-title">BACK TO THE BASICS</h2>
         <p class="hero-sub">Jeans, t-shirts och tidlösa plagg.</p>
         <div class="hero-cta">
-          <a href="#home" class="btn-pill"outline >DAM</a>
+          <a href="#home" class="btn-pill" outline>DAM</a>
           <a href="#home" class="btn-pill outline">HERR</a>
- <a href="#home" class="btn-pill outline">UNISEX</a>
+          <a href="#home" class="btn-pill outline">UNISEX</a>
         </div>
       </div>
     </section>
@@ -158,10 +185,7 @@ function renderProducts(){
     card.dataset.id = p.id;
 
     card.innerHTML = `
-      <!-- Favorit -->
       <button class="fav-btn${favActive ? " active" : ""}" aria-pressed="${ariaPressed}" aria-label="Spara som favorit" data-id="${p.id}">${favIcon}</button>
-
-      <!-- Snabb-lägg i varukorg -->
       <button class="quick-add" aria-label="Lägg i varukorgen" title="Lägg i varukorgen" data-id="${p.id}">${cartSVG()}</button>
 
       <div class="media">
@@ -179,7 +203,6 @@ function renderProducts(){
       if (e.key==="Enter" || e.key===" "){ e.preventDefault(); open(); }
     });
 
-    // hjärta
     const favBtn = card.querySelector(".fav-btn");
     favBtn.addEventListener("click", (e)=>{
       e.stopPropagation();
@@ -190,7 +213,6 @@ function renderProducts(){
       favBtn.textContent = active ? "♥" : "♡";
     });
 
-    // quick-add med flyg-animation
     const qa = card.querySelector(".quick-add");
     qa.addEventListener("click", (e)=>{
       e.stopPropagation();
@@ -271,7 +293,58 @@ function viewProduct(id){
   if (sort) sort.hidden = true;
 }
 
-/* -------- Checkout (demo) -------- */
+/* -------- FAVORITER -------- */
+function viewFavorites(){
+  const ids = [...favs];
+  const favProducts = PRODUCTS.filter(p => ids.includes(p.id));
+
+  appRoot().innerHTML = `
+    <section class="container">
+      <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Favoriter</h2>
+      ${favProducts.length ? `<div id="favGrid" class="grid"></div>` : `<p class="muted">Du har inga favoriter ännu.</p>`}
+    </section>
+  `;
+
+  const grid = $("#favGrid");
+  if (!grid) return;
+
+  favProducts.forEach(p=>{
+    const card = document.createElement("article");
+    card.className = "card fade-in";
+    card.innerHTML = `
+      <button class="fav-btn active" aria-pressed="true" aria-label="Ta bort favorit" data-id="${p.id}">♥</button>
+      <div class="media">
+        <img src="${safeSrc(p)}" alt="${p.name}" onerror="this.onerror=null;this.src='images/fallback.jpg'">
+      </div>
+      <h3>${p.name}</h3>
+      <p class="price">${fmt.format(p.price)}</p>
+      <div style="display:flex; gap:8px; padding:0 16px 16px">
+        <button class="btn primary" data-add="${p.id}">Lägg i varukorg</button>
+        <button class="btn" data-remove="${p.id}">Ta bort</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  grid.addEventListener("click", (e)=>{
+    const idAdd = e.target.getAttribute("data-add");
+    const idRem = e.target.getAttribute("data-remove");
+    const favBtn = e.target.closest(".fav-btn");
+
+    if (idAdd){
+      addToCart(idAdd, 1);
+    } else if (idRem){
+      toggleFav(idRem);
+      viewFavorites();
+    } else if (favBtn){
+      const id = favBtn.getAttribute("data-id");
+      toggleFav(id);
+      viewFavorites();
+    }
+  });
+}
+
+/* -------- Checkout (demo) m. rabattkod -------- */
 function viewCheckout(){
   const items = Object.entries(cart).map(([id,qty])=>{
     const p = PRODUCTS.find(x=>x.id===id);
@@ -279,15 +352,17 @@ function viewCheckout(){
   }).filter(Boolean);
 
   const subtotal = getSubtotal();
-  const shipping = getShipping(subtotal);
-  const total    = subtotal + shipping;
+  const applied = getAppliedCoupon();
+  const discount = applied ? subtotal * COUPON_PCT : 0;
+  const subAfter = Math.max(0, subtotal - discount);
+  const shipping = getShipping(subAfter);
+  const total    = subAfter + shipping;
 
   appRoot().innerHTML = `
     <section class="container checkout">
       <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Kassa</h2>
 
       <div class="checkout-grid">
-        <!-- Order -->
         <div class="order-col">
           ${items.length ? `
           <ul class="cart-list">
@@ -310,20 +385,31 @@ function viewCheckout(){
 
           <div class="summary">
             <div><span>Delsumma</span><span>${fmt.format(subtotal)}</span></div>
+            ${discount ? `<div><span>Rabatt (15%)</span><span>−${fmt.format(discount)}</span></div>` : ``}
             <div><span>Frakt</span><span>${shipping ? fmt.format(shipping) : "0 kr (gratis)"}</span></div>
             <hr/>
             <div class="total"><span>Totalt</span><span>${fmt.format(total)}</span></div>
             <p class="muted" style="margin-top:6px">Fri frakt vid köp över 499 kr.</p>
+
+            <!-- Rabattkod -->
+            <div class="coupon-row">
+              <input id="couponInput" placeholder="Ange rabattkod" ${applied ? 'value="'+COUPON_CODE+'" disabled' : ''}>
+              ${applied
+                ? `<button id="removeCouponBtn" type="button">Ta bort</button>`
+                : `<button id="applyCouponBtn" type="button">Använd</button>`
+              }
+            </div>
+            <div id="couponMsg" class="${applied ? 'coupon-msg' : 'coupon-err'}" style="min-height:1.2em">
+              ${applied ? 'Rabattkod aktiverad: 15% avdrag.' : ''}
+            </div>
           </div>
           ` : `
           <p class="muted">Din varukorg är tom.</p>
           `}
         </div>
 
-        <!-- Form -->
         <form class="checkout-form" id="checkoutForm" novalidate>
           <h3>Leveransuppgifter</h3>
-
           <div class="form-grid">
             <div class="field">
               <label>Förnamn *</label>
@@ -400,6 +486,28 @@ function viewCheckout(){
     }
   });
 
+  // Rabattkod – apply/remove
+  $("#applyCouponBtn")?.addEventListener("click", ()=>{
+    const inp = $("#couponInput");
+    const msg = $("#couponMsg");
+    const code = (inp.value || "").trim().toUpperCase();
+
+    if (code === COUPON_CODE && isCouponValidNow()){
+      setAppliedCoupon(code);
+      viewCheckout();
+    }else{
+      msg.textContent = code ? "Ogiltig eller inte giltig nu." : "Skriv in en kod.";
+      msg.className = "coupon-err";
+    }
+  });
+  $("#couponInput")?.addEventListener("keydown", (e)=>{
+    if (e.key === "Enter"){ e.preventDefault(); $("#applyCouponBtn")?.click(); }
+  });
+  $("#removeCouponBtn")?.addEventListener("click", ()=>{
+    clearAppliedCoupon();
+    viewCheckout();
+  });
+
   // submit (demo)
   $("#checkoutForm")?.addEventListener("submit", (e)=>{
     e.preventDefault();
@@ -409,6 +517,7 @@ function viewCheckout(){
       return;
     }
     cart = {}; saveCart(); updateCartBadge();
+    clearAppliedCoupon();
     appRoot().innerHTML = `
       <section class="container fade-in" style="text-align:center;max-width:720px">
         <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Tack för din beställning!</h2>
@@ -473,6 +582,11 @@ function setupCartButton(){
     navigateTo("#checkout");
   });
 }
+function setupFavListButton(){
+  document.querySelector(".favlist-btn")?.addEventListener("click", ()=>{
+    navigateTo("#favorites");
+  });
+}
 
 /* Visa/dölj kupongraden beroende på route */
 function updateCouponBarVisibility(hash){
@@ -485,16 +599,17 @@ function updateCouponBarVisibility(hash){
 function navigateTo(hash){ location.hash === hash ? router() : (location.hash = hash); }
 function router(){
   const h = location.hash || "#home";
-  updateCouponBarVisibility(h);         // <— styr kupongraden
+  updateCouponBarVisibility(h);
 
   const m = h.match(/^#product[\/-]([^/?#]+)$/);
   if (m){ viewProduct(m[1]); return; }
   switch(h){
-    case "#about":    return viewAbout();
-    case "#contact":  return viewContact();
-    case "#checkout": return viewCheckout();
+    case "#about":     return viewAbout();
+    case "#contact":   return viewContact();
+    case "#checkout":  return viewCheckout();
+    case "#favorites": return viewFavorites();
     case "#home":
-    default:          currentProducts = PRODUCTS.slice(); return viewHome();
+    default:           currentProducts = PRODUCTS.slice(); return viewHome();
   }
 }
 
@@ -502,12 +617,14 @@ window.addEventListener("hashchange", router);
 window.addEventListener("DOMContentLoaded", ()=>{
   const y = $("#year"); if (y) y.textContent = new Date().getFullYear();
   updateCartBadge();
+  updateFavBadge();
   setupMobileNav();
   setupCartButton();
-  updateCouponBarVisibility();  // initial visning
+  setupFavListButton();
+  updateCouponBarVisibility();
   router();
 
-  // “Butik” → scrolla till grid
+  // Scroll till grid från "Butik"-länkar
   document.body.addEventListener("click",(e)=>{
     const toShop = e.target.closest('[data-link="shop"]');
     if (toShop){
@@ -519,7 +636,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
     }
   });
 
-  // Global kopiering av rabattkod (gäller kupongraden och ev. framtida knappar)
+  // Global kopiering av rabattkod (kupongbaren)
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.copy-code');
     if (!btn) return;
