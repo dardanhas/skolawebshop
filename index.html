@@ -2,12 +2,12 @@
 <html lang="sv">
 <head>
   <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NDKSH6H4');</script>
-<!-- End Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NDKSH6H4');</script>
+  <!-- End Google Tag Manager -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DAN25 CLOTHING</title>
@@ -19,9 +19,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDKSH6H4"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDKSH6H4"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
   <!-- ===== HEADER ===== -->
   <header>
     <!-- Brand -->
@@ -42,7 +43,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <!-- Actions -->
     <div class="actions">
-      <!-- Mobil-hamburger (visas ≤640px) -->
       <button class="nav-toggle" aria-expanded="false" aria-label="Meny">
         <span aria-hidden="true"></span>
       </button>
@@ -53,6 +53,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <option value="price-desc">Dyrast först</option>
         <option value="name-asc">Namn A–Ö</option>
       </select>
+
+      <!-- Ny knapp: Favorit-korg -->
+      <button class="favlist-btn" type="button" title="Favoriter">♥ <span id="favCount" class="badge">0</span></button>
 
       <button class="cart-btn" type="button" title="Varukorg">🛒 <span id="cartCount" class="badge">0</span></button>
     </div>
@@ -80,7 +83,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
-  <!-- ===== COUPON BAR (endast startsidan, styrs via app.js) ===== -->
+  <!-- ===== COUPON BAR (endast startsidan) ===== -->
   <div class="coupon-bar" id="couponBar" role="region" aria-label="Rabattkod">
     <span>15% rabatt med kod: </span>
     <button type="button" class="copy-code" data-code="15OFF" aria-label="Kopiera rabattkod">15OFF</button>
@@ -95,7 +98,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     © <span id="year"></span> DAN25 CLOTHING
   </footer>
 
-  <!-- JavaScript app (cache-bust) -->
-  <script src="./app.js?v=3" defer></script>
+  <script src="./app.js?v=4" defer></script>
 </body>
 </html>
