@@ -461,40 +461,49 @@ footer{
   .main-nav{ gap: 12px; }
 }
 
-/* ==== Återställ checkout-form (kontaktuppgifter) till original ==== */
-.checkout-form{
-  background:#151515;
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:var(--radius);
-  padding:16px;
-}
-.checkout-form h3{ margin-bottom:10px; }
-
-.form-grid{
-  display:grid;
-  gap:12px;
-  grid-template-columns: 1fr 1fr; /* två kolumner som innan */
+/* ==== Återställ checkout-form (kontaktuppgifter) – staplad layout ==== */
+.checkout-form .form-grid{
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important; /* två kolumner som tidigare */
+  gap: 12px !important;
 }
 
-.field{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-.field.wide{ grid-column: 1 / -1; }
-
-.field label{ font-weight:600; }
-
-.field input,
-.field select{
-  padding:10px 12px;
-  border-radius:var(--radius);
-  border:1px solid rgba(255,255,255,.18);
-  background:#111;
-  color:#fff;
+.checkout-form .field{
+  display: flex !important;
+  flex-direction: column !important;  /* label över input */
+  gap: 6px !important;
 }
 
-/* Samma brytpunkt som innan: en kolumn på mobil */
+.checkout-form .field.wide{
+  grid-column: 1 / -1 !important;    /* fält som ska spänna över båda kolumnerna */
+}
+
+/* Labels */
+.checkout-form .field label{
+  display: block !important;
+  width: auto !important;             /* nollställ ev. fasta bredder */
+  margin: 0 0 6px 0 !important;
+  font-weight: 600;
+  font-size: 1rem;                    /* normal textstorlek */
+}
+
+/* Inputs/selects */
+.checkout-form .field input,
+.checkout-form .field select{
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 10px 12px !important;
+  border-radius: var(--radius) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  background: #111 !important;
+  color: #fff !important;
+}
+
+/* Mobil: en kolumn */
 @media (max-width: 900px){
-  .form-grid{ grid-template-columns: 1fr; }
+  .checkout-form .form-grid{
+    grid-template-columns: 1fr !important;
+  }
 }
+
