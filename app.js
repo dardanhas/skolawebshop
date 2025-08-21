@@ -314,17 +314,6 @@ function viewCheckout(){
             <hr/>
             <div class="total"><span>Totalt</span><span>${fmt.format(total)}</span></div>
             <p class="muted" style="margin-top:6px">Fri frakt vid köp över 499 kr.</p>
-            <p class="muted" style="margin-top:4px">
-              15% rabatt med kod:
-              <button type="button"
-                      class="copy-code"
-                      data-code="15OFF"
-                      title="Kopiera rabattkod"
-                      style="background:none;border:none;padding:0;margin:0;cursor:pointer;text-decoration:underline;font:inherit">
-                15OFF
-              </button>
-              <span>*Endast giltig under augusti 2025*</span>
-            </p>
           </div>
           ` : `
           <p class="muted">Din varukorg är tom.</p>
@@ -429,23 +418,6 @@ function viewCheckout(){
     `;
   });
 
-  // Kopiera rabattkod 15OFF med ett klick (ingen animation)
-  document.querySelector('.copy-code')?.addEventListener('click', (e) => {
-    const btn  = e.currentTarget;
-    const code = btn.getAttribute('data-code') || '15OFF';
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(code);
-    } else {
-      const t = document.createElement('textarea');
-      t.value = code; document.body.appendChild(t);
-      t.select(); document.execCommand('copy'); t.remove();
-    }
-    // Diskret textfeedback
-    const orig = btn.textContent;
-    btn.textContent = code + ' – kopierad';
-    setTimeout(() => { btn.textContent = orig; }, 1200);
-  });
-
   const sort = $("#sortSelect"); if (sort) sort.hidden = true;
 }
 
@@ -502,9 +474,19 @@ function setupCartButton(){
   });
 }
 
+/* Visa/dölj kupongraden beroende på route */
+function updateCouponBarVisibility(hash){
+  const h = hash || (location.hash || "#home");
+  const bar = document.getElementById("couponBar");
+  if (!bar) return;
+  bar.style.display = (h === "#home") ? "" : "none";
+}
+
 function navigateTo(hash){ location.hash === hash ? router() : (location.hash = hash); }
 function router(){
   const h = location.hash || "#home";
+  updateCouponBarVisibility(h);         // <— styr kupongraden
+
   const m = h.match(/^#product[\/-]([^/?#]+)$/);
   if (m){ viewProduct(m[1]); return; }
   switch(h){
@@ -522,6 +504,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
   updateCartBadge();
   setupMobileNav();
   setupCartButton();
+  updateCouponBarVisibility();  // initial visning
   router();
 
   // “Butik” → scrolla till grid
@@ -534,5 +517,22 @@ window.addEventListener("DOMContentLoaded", ()=>{
         if (grid) grid.scrollIntoView({behavior:"smooth", block:"start"});
       }, 50);
     }
+  });
+
+  // Global kopiering av rabattkod (gäller kupongraden och ev. framtida knappar)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.copy-code');
+    if (!btn) return;
+    const code = btn.getAttribute('data-code') || '15OFF';
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(code);
+    } else {
+      const t = document.createElement('textarea');
+      t.value = code; document.body.appendChild(t);
+      t.select(); document.execCommand('copy'); t.remove();
+    }
+    const original = btn.textContent.trim();
+    btn.textContent = code + ' – kopierad';
+    setTimeout(() => { btn.textContent = original; }, 1200);
   });
 });
