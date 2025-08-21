@@ -507,3 +507,11 @@ footer{
   }
 }
 
+/* === Fix: ge "Slutför köp (demo)" full bredd och luft === */
+.checkout-form .btn.full{
+  display:block !important;
+  width:100% !important;
+  margin-top:14px !important;
+  grid-column: 1 / -1 !important; /* om den råkar ligga i grid, spänn över båda kolumnerna */
+}
+
