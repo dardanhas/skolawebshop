@@ -8,6 +8,7 @@
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-NDKSH6H4');</script>
   <!-- End Google Tag Manager -->
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DAN25 CLOTHING</title>
@@ -15,7 +16,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@700&family=Cinzel:wght@800&family=Inter:wght@400;600;800&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
@@ -25,7 +26,6 @@
 
   <!-- ===== HEADER ===== -->
   <header>
-    <!-- Brand -->
     <a href="#home" class="brand" title="DAN25 CLOTHING – Hem">
       <span class="brand-wordmark">
         <span class="mark">DAN25</span>
@@ -33,7 +33,6 @@
       </span>
     </a>
 
-    <!-- Nav (centrerad) -->
     <nav class="main-nav">
       <a href="#home">Hem</a>
       <a href="#home" data-link="shop">Butik</a>
@@ -41,27 +40,20 @@
       <a href="#contact">Kontakt</a>
     </nav>
 
-    <!-- Actions -->
     <div class="actions">
-      <button class="nav-toggle" aria-expanded="false" aria-label="Meny">
-        <span aria-hidden="true"></span>
-      </button>
-
+      <button class="nav-toggle" aria-expanded="false" aria-label="Meny"><span aria-hidden="true"></span></button>
       <select id="sortSelect" class="select" aria-label="Sortera" hidden>
         <option value="">Sortera</option>
         <option value="price-asc">Billigast först</option>
         <option value="price-desc">Dyrast först</option>
         <option value="name-asc">Namn A–Ö</option>
       </select>
-
-      <!-- Ny knapp: Favorit-korg -->
       <button class="favlist-btn" type="button" title="Favoriter">♥ <span id="favCount" class="badge">0</span></button>
-
       <button class="cart-btn" type="button" title="Varukorg">🛒 <span id="cartCount" class="badge">0</span></button>
     </div>
   </header>
 
-  <!-- ===== ANNOUNCEMENT ===== -->
+  <!-- ===== ANNOUNCEMENT (rullande) ===== -->
   <div class="announcement" role="region" aria-label="Fri frakt-banner">
     <div class="marquee">
       <div class="marquee__content">
@@ -83,21 +75,16 @@
     </div>
   </div>
 
-  <!-- ===== COUPON BAR (endast startsidan) ===== -->
-  <div class="coupon-bar" id="couponBar" role="region" aria-label="Rabattkod">
-    <span>15% rabatt med kod: </span>
-    <button type="button" class="copy-code" data-code="15OFF" aria-label="Kopiera rabattkod">15OFF</button>
-    <span class="coupon-note">*Endast giltig under augusti 2025*</span>
+  <!-- ===== COUPON / MEMBER BAR (endast startsidan) ===== -->
+  <div class="coupon-bar" id="couponBar" role="region" aria-label="Membership offer">
+    <span>15% OFF ON YOUR FIRST ORDER AS A MEMBER — </span>
+    <button type="button" class="btn-link" data-nav="#account" aria-label="Sign up to become a member">Sign up here</button>
   </div>
 
-  <!-- ===== APP ROOT ===== -->
   <main id="app"></main>
 
-  <!-- ===== FOOTER ===== -->
-  <footer>
-    © <span id="year"></span> DAN25 CLOTHING
-  </footer>
+  <footer>© <span id="year"></span> DAN25 CLOTHING</footer>
 
-  <script src="./app.js?v=4" defer></script>
+  <script src="./app.js?v=7" defer></script>
 </body>
 </html>
