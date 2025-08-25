@@ -19,7 +19,7 @@ const PRODUCTS = [
 ];
 
 /* ===== Member / Auth (demo, localStorage — ej för produktion) ===== */
-const USERS_KEY = "dan25:users";           // { [email]: {email, name, pass, isMember:true, memberDiscountUsed:false, ...profile } }
+const USERS_KEY = "dan25:users";           // { [email]: {email, name, pass, isMember:true, memberDiscountUsed:false, profile? } }
 const CURRENT_USER_KEY = "dan25:currentUser";
 
 function loadUsers(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)||"{}"); }catch(_){ return {}; } }
@@ -136,12 +136,14 @@ function viewHome(){
   appRoot().innerHTML = `
     <section class="hero">
       <div class="hero-content">
-        <h2 class="hero-title">BACK TO THE BASICS</h2>
-        <p class="hero-sub">Jeans, t-shirts och tidlösa plagg.</p>
-        <div class="hero-cta">
-          <a href="#home" class="btn-pill" outline>DAM</a>
-          <a href="#home" class="btn-pill outline">HERR</a>
-          <a href="#home" class="btn-pill outline">UNISEX</a>
+        <div>
+          <h2 class="hero-title">BACK TO THE BASICS</h2>
+          <p class="hero-sub">Jeans, t-shirts och tidlösa plagg.</p>
+          <div class="hero-cta">
+            <a href="#home" data-link="shop" class="btn-pill">DAM</a>
+            <a href="#home" data-link="shop" class="btn-pill outline">HERR</a>
+            <a href="#home" data-link="shop" class="btn-pill outline">UNISEX</a>
+          </div>
         </div>
       </div>
     </section>
@@ -532,7 +534,6 @@ function viewCheckout(){
         if (el && v) el.value = v;
       }
       if (!f.querySelector('[name="email"]').value) f.querySelector('[name="email"]').value = user.email;
-      // Fyll namn om saknas
       if (user.name && !f.querySelector('[name="firstName"]').value){
         const parts = user.name.split(" ");
         f.querySelector('[name="firstName"]').value = parts[0] || "";
@@ -540,7 +541,6 @@ function viewCheckout(){
       }
     }
   } else if (user){
-    // fyll e-post åtminstone
     const emailEl = document.querySelector('[name="email"]');
     if (emailEl) emailEl.value = user.email;
   }
@@ -581,14 +581,13 @@ function viewCheckout(){
     const form = e.currentTarget;
     if (!form.checkValidity()){ form.reportValidity(); return; }
 
-    // Spara profil till användaren för snabbare nästa gång
+    // Spara profil + markera ev. använd rabatt
     const userNow = getCurrentUser();
     if (userNow){
       const users = loadUsers();
       users[userNow.email] = {
         ...userNow,
         profile: Object.fromEntries(new FormData(form).entries()),
-        // Första ordern: markera rabatt som använd om den var aktiv
         memberDiscountUsed: userNow.memberDiscountUsed || eligibleMember
       };
       saveUsers(users);
@@ -661,7 +660,7 @@ function setupFavListButton(){
   document.querySelector(".favlist-btn")?.addEventListener("click", ()=>{ navigateTo("#favorites"); });
 }
 
-/* Visa/dölj kupongraden beroende på route */
+/* Visa/dölj medlemsraden beroende på route */
 function updateCouponBarVisibility(hash){
   const h = hash || (location.hash || "#home");
   const bar = document.getElementById("couponBar");
