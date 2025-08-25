@@ -16,7 +16,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@700&family=Cinzel:wght@800&family=Inter:wght@400;600;800&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="stylesheet" href="styles.css?v=9" />
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
@@ -50,6 +50,12 @@
       </select>
       <button class="favlist-btn" type="button" title="Favoriter">♥ <span id="favCount" class="badge">0</span></button>
       <button class="cart-btn" type="button" title="Varukorg">🛒 <span id="cartCount" class="badge">0</span></button>
+
+      <!-- NY: Auth-knapp + dropdown -->
+      <div class="auth-wrap">
+        <button class="auth-btn" type="button" id="authBtn">Log in / Sign up</button>
+        <div class="auth-menu" id="authMenu" hidden></div>
+      </div>
     </div>
   </header>
 
@@ -85,6 +91,6 @@
 
   <footer>© <span id="year"></span> DAN25 CLOTHING</footer>
 
-  <script src="./app.js?v=8" defer></script>
+  <script src="./app.js?v=9" defer></script>
 </body>
 </html>
