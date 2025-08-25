@@ -435,14 +435,8 @@ function viewCheckout(){
       <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Kassa</h2>
 
       <div class="checkout-grid">
+        <!-- Vänster kolumn: varukorg -->
         <div class="order-col">
-          ${!user ? `
-            <div class="notice">
-              <span>Log in for quicker checkout and <strong>15% on your first order as a member</strong>.</span>
-              <button class="btn" id="goLogin">Log in / Sign up</button>
-            </div>
-          ` : ""}
-
           ${items.length ? `
           <ul class="cart-list">
             ${items.map(it=>`
@@ -470,12 +464,18 @@ function viewCheckout(){
             <div class="total"><span>Totalt</span><span>${fmt.format(total)}</span></div>
             <p class="muted" style="margin-top:6px">Fri frakt vid köp över 499 kr.</p>
           </div>
-          ` : `
-          <p class="muted">Din varukorg är tom.</p>
-          `}
+          ` : `<p class="muted">Din varukorg är tom.</p>`}
         </div>
 
+        <!-- Höger kolumn: formulär med notice överst -->
         <form class="checkout-form" id="checkoutForm" novalidate>
+          ${!user ? `
+            <div class="notice">
+              <span>Log in for quicker checkout and <strong>15% on your first order as a member</strong>.</span>
+              <button class="btn" id="goLogin">Log in / Sign up</button>
+            </div>
+          ` : ""}
+
           <h3>Leveransuppgifter</h3>
 
           <div class="form-grid">
@@ -525,43 +525,31 @@ function viewCheckout(){
     </section>
   `;
 
-  // Prefill om inloggad och har sparade uppgifter
-  if (user && user.profile){
+  // Prefill-profil
+  const userNow = getCurrentUser();
+  if (userNow && userNow.profile){
     const f = $("#checkoutForm");
     if (f){
-      for (const [k,v] of Object.entries(user.profile)){
+      for (const [k,v] of Object.entries(userNow.profile)){
         const el = f.querySelector(`[name="${k}"]`);
         if (el && v) el.value = v;
       }
-      if (!f.querySelector('[name="email"]').value) f.querySelector('[name="email"]').value = user.email;
-      if (user.name && !f.querySelector('[name="firstName"]').value){
-        const parts = user.name.split(" ");
+      if (!f.querySelector('[name="email"]').value) f.querySelector('[name="email"]').value = userNow.email;
+      if (userNow.name && !f.querySelector('[name="firstName"]').value){
+        const parts = userNow.name.split(" ");
         f.querySelector('[name="firstName"]').value = parts[0] || "";
         f.querySelector('[name="lastName"]').value  = parts.slice(1).join(" ");
       }
     }
-  } else if (user){
-    const emailEl = document.querySelector('[name="email"]');
-    if (emailEl) emailEl.value = user.email;
   }
 
-  // qty +/-, remove
+  // qty/btn-lyssnare
   $(".order-col")?.addEventListener("click", (e)=>{
     const row = e.target.closest(".cart-row"); if (!row) return;
     const id = row.dataset.id;
-
-    if (e.target.matches("[data-inc]")) {
-      setQty(id, (cart[id]||1)+1);
-      row.querySelector(".qty-input").value = cart[id];
-      viewCheckout();
-    } else if (e.target.matches("[data-dec]")) {
-      setQty(id, (cart[id]||1)-1);
-      if (!cart[id]) row.remove();
-      viewCheckout();
-    } else if (e.target.matches(".remove")) {
-      setQty(id, 0);
-      viewCheckout();
-    }
+    if (e.target.matches("[data-inc]")) { setQty(id, (cart[id]||1)+1); row.querySelector(".qty-input").value = cart[id]; viewCheckout(); }
+    else if (e.target.matches("[data-dec]")) { setQty(id, (cart[id]||1)-1); if (!cart[id]) row.remove(); viewCheckout(); }
+    else if (e.target.matches(".remove")) { setQty(id, 0); viewCheckout(); }
   });
   $(".order-col")?.addEventListener("change", (e)=>{
     const row = e.target.closest(".cart-row");
@@ -573,35 +561,8 @@ function viewCheckout(){
     }
   });
 
+  // Knapp i notisen
   $("#goLogin")?.addEventListener("click", ()=> navigateTo("#account"));
-
-  // submit (demo)
-  $("#checkoutForm")?.addEventListener("submit", (e)=>{
-    e.preventDefault();
-    const form = e.currentTarget;
-    if (!form.checkValidity()){ form.reportValidity(); return; }
-
-    // Spara profil + markera ev. använd rabatt
-    const userNow = getCurrentUser();
-    if (userNow){
-      const users = loadUsers();
-      users[userNow.email] = {
-        ...userNow,
-        profile: Object.fromEntries(new FormData(form).entries()),
-        memberDiscountUsed: userNow.memberDiscountUsed || eligibleMember
-      };
-      saveUsers(users);
-    }
-
-    cart = {}; saveCart(); updateCartBadge();
-    appRoot().innerHTML = `
-      <section class="container fade-in" style="text-align:center;max-width:720px">
-        <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Tack för din beställning!</h2>
-        <p class="muted">Du får ett bekräftelsemejl inom kort (demo-text).</p>
-        <p style="margin-top:20px"><a class="btn" href="#home">Tillbaka till butiken</a></p>
-      </section>
-    `;
-  });
 
   const sort = $("#sortSelect"); if (sort) sort.hidden = true;
 }
@@ -659,6 +620,9 @@ function setupCartButton(){
 function setupFavListButton(){
   document.querySelector(".favlist-btn")?.addEventListener("click", ()=>{ navigateTo("#favorites"); });
 }
+function setupAuthButton(){
+  document.querySelector(".auth-btn")?.addEventListener("click", ()=>{ navigateTo("#account"); });
+}
 
 /* Visa/dölj medlemsraden beroende på route */
 function updateCouponBarVisibility(hash){
@@ -690,7 +654,7 @@ window.addEventListener("hashchange", router);
 window.addEventListener("DOMContentLoaded", ()=>{
   const y = $("#year"); if (y) y.textContent = new Date().getFullYear();
   updateCartBadge(); updateFavBadge();
-  setupMobileNav(); setupCartButton(); setupFavListButton();
+  setupMobileNav(); setupCartButton(); setupFavListButton(); setupAuthButton();
   updateCouponBarVisibility();
   router();
 
