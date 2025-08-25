@@ -1,5 +1,5 @@
 /* =========================================
-   DAN25 CLOTHING — SPA m. quick-add + checkout (demo)
+   DAN25 CLOTHING — SPA + favorites + checkout + simple auth (demo)
    ========================================= */
 
 /* Currency */
@@ -18,30 +18,35 @@ const PRODUCTS = [
   { id: "p9", name: "Kappa",          price: 2799, img: "images/coat.jpg",        sizes: ["XS","S","M","L"] },
 ];
 
-/* === Rabattkod === */
-const COUPON_CODE = "15OFF";
-const COUPON_PCT  = 0.15;
-const COUPON_KEY  = "dan25:coupon";
-/** Giltig endast under augusti 2025 (som i budskapet) */
-function isCouponValidNow(){
-  const d = new Date();
-  return d.getFullYear() === 2025 && d.getMonth() === 7; // 0-index: 7 = augusti
-}
-function getAppliedCoupon(){
-  try{
-    const saved = JSON.parse(localStorage.getItem(COUPON_KEY) || "null");
-    if (saved && saved.code === COUPON_CODE && isCouponValidNow()) return saved;
-  }catch(_){}
-  return null;
-}
-function setAppliedCoupon(code){
-  localStorage.setItem(COUPON_KEY, JSON.stringify({code}));
-}
-function clearAppliedCoupon(){
-  localStorage.removeItem(COUPON_KEY);
-}
+/* ===== Member / Auth (demo, localStorage — ej för produktion) ===== */
+const USERS_KEY = "dan25:users";           // { [email]: {email, name, pass, isMember:true, memberDiscountUsed:false, ...profile } }
+const CURRENT_USER_KEY = "dan25:currentUser";
 
-/* State */
+function loadUsers(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)||"{}"); }catch(_){ return {}; } }
+function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function getCurrentUserEmail(){ return localStorage.getItem(CURRENT_USER_KEY) || null; }
+function setCurrentUserEmail(email){ localStorage.setItem(CURRENT_USER_KEY, email); }
+function clearCurrentUserEmail(){ localStorage.removeItem(CURRENT_USER_KEY); }
+function getCurrentUser(){ const users = loadUsers(); const email = getCurrentUserEmail(); return email ? users[email] || null : null; }
+
+function registerUser({name, email, pass}){
+  const users = loadUsers();
+  if (users[email]) throw new Error("E-postadressen är redan registrerad.");
+  users[email] = { email, name: name || "", pass, isMember: true, memberDiscountUsed: false };
+  saveUsers(users);
+  setCurrentUserEmail(email);
+  return users[email];
+}
+function loginUser({email, pass}){
+  const users = loadUsers();
+  const u = users[email];
+  if (!u || u.pass !== pass) throw new Error("Fel e-post eller lösenord.");
+  setCurrentUserEmail(email);
+  return u;
+}
+function logoutUser(){ clearCurrentUserEmail(); }
+
+/* ===== Cart / Favs ===== */
 const CART_KEY = "dan25:cart";
 const FAV_KEY  = "dan25:favs";
 let cart = {};
@@ -103,16 +108,10 @@ function flyToCart(imgEl){
 
   const clone = imgEl.cloneNode(true);
   Object.assign(clone.style, {
-    position: 'fixed',
-    zIndex: 9999,
-    top:  imgRect.top  + 'px',
-    left: imgRect.left + 'px',
-    width:  imgRect.width  + 'px',
-    height: imgRect.height + 'px',
-    borderRadius: '8px',
-    boxShadow: '0 8px 24px rgba(0,0,0,.35)',
-    pointerEvents: 'none',
-    transition: 'transform 0.8s cubic-bezier(0.22,0.61,0.36,1), opacity 0.8s ease'
+    position: 'fixed', zIndex: 9999, top: imgRect.top+'px', left: imgRect.left+'px',
+    width: imgRect.width+'px', height: imgRect.height+'px', borderRadius: '8px',
+    boxShadow: '0 8px 24px rgba(0,0,0,.35)', pointerEvents: 'none',
+    transition: 'transform .8s cubic-bezier(0.22,0.61,0.36,1), opacity .8s ease'
   });
   document.body.appendChild(clone);
 
@@ -187,17 +186,14 @@ function renderProducts(){
     card.innerHTML = `
       <button class="fav-btn${favActive ? " active" : ""}" aria-pressed="${ariaPressed}" aria-label="Spara som favorit" data-id="${p.id}">${favIcon}</button>
       <button class="quick-add" aria-label="Lägg i varukorgen" title="Lägg i varukorgen" data-id="${p.id}">${cartSVG()}</button>
-
       <div class="media">
-        <img src="${safeSrc(p)}" alt="${p.name}" loading="lazy"
-             onerror="this.onerror=null;this.src='images/fallback.jpg'">
+        <img src="${safeSrc(p)}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='images/fallback.jpg'">
       </div>
-
       <h3>${p.name}</h3>
       <p class="price">${fmt.format(p.price)}</p>
     `;
 
-    const open = () => openProduct(p.id);
+    const open = () => { openProduct(p.id); };
     card.addEventListener("click", open);
     card.addEventListener("keydown", e=>{
       if (e.key==="Enter" || e.key===" "){ e.preventDefault(); open(); }
@@ -289,8 +285,7 @@ function viewProduct(id){
   };
   $("#backBtn").onclick = () => navigateTo("#home");
 
-  const sort = $("#sortSelect");
-  if (sort) sort.hidden = true;
+  const sort = $("#sortSelect"); if (sort) sort.hidden = true;
 }
 
 /* -------- FAVORITER -------- */
@@ -344,7 +339,81 @@ function viewFavorites(){
   });
 }
 
-/* -------- Checkout (demo) m. rabattkod -------- */
+/* -------- ACCOUNT (login / signup / logout) -------- */
+function viewAccount(){
+  const user = getCurrentUser();
+  appRoot().innerHTML = `
+    <section class="container">
+      <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Konto</h2>
+
+      ${user ? `
+        <div class="auth-card">
+          <p>Inloggad som <strong>${user.email}</strong>${user.name ? ` (${user.name})` : ""}.</p>
+          <p class="auth-small">Medlemsstatus: ${user.isMember ? "Member" : "—"} · Första orderns 15%: ${user.memberDiscountUsed ? "förbrukad" : "tillgänglig"}</p>
+          <div class="auth-actions" style="margin-top:10px">
+            <button class="btn" id="logoutBtn">Logga ut</button>
+            <button class="btn primary" id="toCheckoutBtn">Till kassan</button>
+          </div>
+        </div>
+      ` : `
+        <div class="auth-grid">
+          <div class="auth-card">
+            <h3>Logga in</h3>
+            <div class="field"><label>E-post</label><input id="loginEmail" type="email" autocomplete="email"></div>
+            <div class="field"><label>Lösenord</label><input id="loginPass" type="password" autocomplete="current-password"></div>
+            <div class="auth-actions">
+              <button class="btn primary" id="loginBtn">Logga in</button>
+              <span id="loginMsg" class="auth-small"></span>
+            </div>
+          </div>
+
+          <div class="auth-card">
+            <h3>Skapa konto</h3>
+            <div class="field"><label>Namn</label><input id="regName" autocomplete="name"></div>
+            <div class="field"><label>E-post</label><input id="regEmail" type="email" autocomplete="email"></div>
+            <div class="field"><label>Lösenord</label><input id="regPass" type="password" autocomplete="new-password"></div>
+            <div class="auth-actions">
+              <button class="btn primary" id="regBtn">Sign up (15% first order)</button>
+              <span id="regMsg" class="auth-small"></span>
+            </div>
+          </div>
+        </div>
+        <p class="auth-small" style="margin-top:10px">Demo-inloggning (lagras lokalt). För produktion: använd riktig backend/auth.</p>
+      `}
+    </section>
+  `;
+
+  $("#logoutBtn")?.addEventListener("click", ()=>{
+    logoutUser();
+    viewAccount();
+  });
+  $("#toCheckoutBtn")?.addEventListener("click", ()=> navigateTo("#checkout"));
+
+  $("#loginBtn")?.addEventListener("click", ()=>{
+    const email = $("#loginEmail").value.trim().toLowerCase();
+    const pass  = $("#loginPass").value;
+    const msg = $("#loginMsg");
+    try{
+      loginUser({email, pass});
+      msg.textContent = "Inloggad ✔";
+      navigateTo("#checkout");
+    }catch(e){ msg.textContent = e.message; }
+  });
+  $("#regBtn")?.addEventListener("click", ()=>{
+    const name  = $("#regName").value.trim();
+    const email = $("#regEmail").value.trim().toLowerCase();
+    const pass  = $("#regPass").value;
+    const msg = $("#regMsg");
+    if (!email || !pass){ msg.textContent = "Fyll i e-post och lösenord."; return; }
+    try{
+      registerUser({name, email, pass});
+      msg.textContent = "Konto skapat ✔";
+      navigateTo("#checkout");
+    }catch(e){ msg.textContent = e.message; }
+  });
+}
+
+/* -------- Checkout (demo) med medlemsrabatt -------- */
 function viewCheckout(){
   const items = Object.entries(cart).map(([id,qty])=>{
     const p = PRODUCTS.find(x=>x.id===id);
@@ -352,9 +421,10 @@ function viewCheckout(){
   }).filter(Boolean);
 
   const subtotal = getSubtotal();
-  const applied = getAppliedCoupon();
-  const discount = applied ? subtotal * COUPON_PCT : 0;
-  const subAfter = Math.max(0, subtotal - discount);
+  const user = getCurrentUser();
+  const eligibleMember = !!(user && user.isMember && !user.memberDiscountUsed);
+  const memberDiscount = eligibleMember ? subtotal * 0.15 : 0;
+  const subAfter = Math.max(0, subtotal - memberDiscount);
   const shipping = getShipping(subAfter);
   const total    = subAfter + shipping;
 
@@ -364,6 +434,13 @@ function viewCheckout(){
 
       <div class="checkout-grid">
         <div class="order-col">
+          ${!user ? `
+            <div class="notice">
+              <span>Log in for quicker checkout and <strong>15% on your first order as a member</strong>.</span>
+              <button class="btn" id="goLogin">Log in / Sign up</button>
+            </div>
+          ` : ""}
+
           ${items.length ? `
           <ul class="cart-list">
             ${items.map(it=>`
@@ -385,23 +462,11 @@ function viewCheckout(){
 
           <div class="summary">
             <div><span>Delsumma</span><span>${fmt.format(subtotal)}</span></div>
-            ${discount ? `<div><span>Rabatt (15%)</span><span>−${fmt.format(discount)}</span></div>` : ``}
+            ${memberDiscount ? `<div><span>Member discount (first order)</span><span>−${fmt.format(memberDiscount)}</span></div>` : ``}
             <div><span>Frakt</span><span>${shipping ? fmt.format(shipping) : "0 kr (gratis)"}</span></div>
             <hr/>
             <div class="total"><span>Totalt</span><span>${fmt.format(total)}</span></div>
             <p class="muted" style="margin-top:6px">Fri frakt vid köp över 499 kr.</p>
-
-            <!-- Rabattkod -->
-            <div class="coupon-row">
-              <input id="couponInput" placeholder="Ange rabattkod" ${applied ? 'value="'+COUPON_CODE+'" disabled' : ''}>
-              ${applied
-                ? `<button id="removeCouponBtn" type="button">Ta bort</button>`
-                : `<button id="applyCouponBtn" type="button">Använd</button>`
-              }
-            </div>
-            <div id="couponMsg" class="${applied ? 'coupon-msg' : 'coupon-err'}" style="min-height:1.2em">
-              ${applied ? 'Rabattkod aktiverad: 15% avdrag.' : ''}
-            </div>
           </div>
           ` : `
           <p class="muted">Din varukorg är tom.</p>
@@ -410,6 +475,7 @@ function viewCheckout(){
 
         <form class="checkout-form" id="checkoutForm" novalidate>
           <h3>Leveransuppgifter</h3>
+
           <div class="form-grid">
             <div class="field">
               <label>Förnamn *</label>
@@ -457,6 +523,28 @@ function viewCheckout(){
     </section>
   `;
 
+  // Prefill om inloggad och har sparade uppgifter
+  if (user && user.profile){
+    const f = $("#checkoutForm");
+    if (f){
+      for (const [k,v] of Object.entries(user.profile)){
+        const el = f.querySelector(`[name="${k}"]`);
+        if (el && v) el.value = v;
+      }
+      if (!f.querySelector('[name="email"]').value) f.querySelector('[name="email"]').value = user.email;
+      // Fyll namn om saknas
+      if (user.name && !f.querySelector('[name="firstName"]').value){
+        const parts = user.name.split(" ");
+        f.querySelector('[name="firstName"]').value = parts[0] || "";
+        f.querySelector('[name="lastName"]').value  = parts.slice(1).join(" ");
+      }
+    }
+  } else if (user){
+    // fyll e-post åtminstone
+    const emailEl = document.querySelector('[name="email"]');
+    if (emailEl) emailEl.value = user.email;
+  }
+
   // qty +/-, remove
   $(".order-col")?.addEventListener("click", (e)=>{
     const row = e.target.closest(".cart-row"); if (!row) return;
@@ -475,7 +563,6 @@ function viewCheckout(){
       viewCheckout();
     }
   });
-
   $(".order-col")?.addEventListener("change", (e)=>{
     const row = e.target.closest(".cart-row");
     if (row && e.target.matches(".qty-input")){
@@ -486,38 +573,28 @@ function viewCheckout(){
     }
   });
 
-  // Rabattkod – apply/remove
-  $("#applyCouponBtn")?.addEventListener("click", ()=>{
-    const inp = $("#couponInput");
-    const msg = $("#couponMsg");
-    const code = (inp.value || "").trim().toUpperCase();
-
-    if (code === COUPON_CODE && isCouponValidNow()){
-      setAppliedCoupon(code);
-      viewCheckout();
-    }else{
-      msg.textContent = code ? "Ogiltig eller inte giltig nu." : "Skriv in en kod.";
-      msg.className = "coupon-err";
-    }
-  });
-  $("#couponInput")?.addEventListener("keydown", (e)=>{
-    if (e.key === "Enter"){ e.preventDefault(); $("#applyCouponBtn")?.click(); }
-  });
-  $("#removeCouponBtn")?.addEventListener("click", ()=>{
-    clearAppliedCoupon();
-    viewCheckout();
-  });
+  $("#goLogin")?.addEventListener("click", ()=> navigateTo("#account"));
 
   // submit (demo)
   $("#checkoutForm")?.addEventListener("submit", (e)=>{
     e.preventDefault();
     const form = e.currentTarget;
-    if (!form.checkValidity()){
-      form.reportValidity();
-      return;
+    if (!form.checkValidity()){ form.reportValidity(); return; }
+
+    // Spara profil till användaren för snabbare nästa gång
+    const userNow = getCurrentUser();
+    if (userNow){
+      const users = loadUsers();
+      users[userNow.email] = {
+        ...userNow,
+        profile: Object.fromEntries(new FormData(form).entries()),
+        // Första ordern: markera rabatt som använd om den var aktiv
+        memberDiscountUsed: userNow.memberDiscountUsed || eligibleMember
+      };
+      saveUsers(users);
     }
+
     cart = {}; saveCart(); updateCartBadge();
-    clearAppliedCoupon();
     appRoot().innerHTML = `
       <section class="container fade-in" style="text-align:center;max-width:720px">
         <h2 style="font-family:'Cormorant',serif;margin-bottom:10px">Tack för din beställning!</h2>
@@ -578,14 +655,10 @@ function setupMobileNav(){
   window.addEventListener("resize", ()=>{ if (innerWidth>640) close(); });
 }
 function setupCartButton(){
-  document.querySelector(".cart-btn")?.addEventListener("click", ()=>{
-    navigateTo("#checkout");
-  });
+  document.querySelector(".cart-btn")?.addEventListener("click", ()=>{ navigateTo("#checkout"); });
 }
 function setupFavListButton(){
-  document.querySelector(".favlist-btn")?.addEventListener("click", ()=>{
-    navigateTo("#favorites");
-  });
+  document.querySelector(".favlist-btn")?.addEventListener("click", ()=>{ navigateTo("#favorites"); });
 }
 
 /* Visa/dölj kupongraden beroende på route */
@@ -608,6 +681,7 @@ function router(){
     case "#contact":   return viewContact();
     case "#checkout":  return viewCheckout();
     case "#favorites": return viewFavorites();
+    case "#account":   return viewAccount();
     case "#home":
     default:           currentProducts = PRODUCTS.slice(); return viewHome();
   }
@@ -616,40 +690,25 @@ function router(){
 window.addEventListener("hashchange", router);
 window.addEventListener("DOMContentLoaded", ()=>{
   const y = $("#year"); if (y) y.textContent = new Date().getFullYear();
-  updateCartBadge();
-  updateFavBadge();
-  setupMobileNav();
-  setupCartButton();
-  setupFavListButton();
+  updateCartBadge(); updateFavBadge();
+  setupMobileNav(); setupCartButton(); setupFavListButton();
   updateCouponBarVisibility();
   router();
 
-  // Scroll till grid från "Butik"-länkar
+  // “Butik” → scroll till grid
   document.body.addEventListener("click",(e)=>{
     const toShop = e.target.closest('[data-link="shop"]');
     if (toShop){
       navigateTo("#home");
-      setTimeout(()=>{
-        const grid = $("#productGrid");
-        if (grid) grid.scrollIntoView({behavior:"smooth", block:"start"});
-      }, 50);
+      setTimeout(()=>{ $("#productGrid")?.scrollIntoView({behavior:"smooth", block:"start"}); }, 50);
     }
   });
 
-  // Global kopiering av rabattkod (kupongbaren)
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.copy-code');
+  // Navigera via data-nav (t.ex. “Sign up here”)
+  document.body.addEventListener("click",(e)=>{
+    const btn = e.target.closest('[data-nav]');
     if (!btn) return;
-    const code = btn.getAttribute('data-code') || '15OFF';
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(code);
-    } else {
-      const t = document.createElement('textarea');
-      t.value = code; document.body.appendChild(t);
-      t.select(); document.execCommand('copy'); t.remove();
-    }
-    const original = btn.textContent.trim();
-    btn.textContent = code + ' – kopierad';
-    setTimeout(() => { btn.textContent = original; }, 1200);
+    const dest = btn.getAttribute('data-nav');
+    if (dest) navigateTo(dest);
   });
 });
